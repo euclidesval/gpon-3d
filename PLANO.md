@@ -227,6 +227,11 @@ Em cada paragem: commit + push para `claude/zen-noether-3wwknm`, link do Pages e
 - Playwright: `scripts/capturas.mjs` copia o canvas para uma `<img>` antes de capturar (o headless nem sempre apresenta o último frame WebGL).
 - `dist/` está no `.gitignore` durante o desenvolvimento; na entrega final é gerado e incluído.
 
+## Revisão das cenas 0–3 (subagentes)
+- Revisor técnico e revisor didáctico correram sobre as cenas 0–3; correcções aplicadas (ver commit «revisão das cenas 0–3»).
+- **Ponto em aberto (decisão do utilizador):** o revisor técnico assinala que os números ONT 1, 3, 5 e 7 não estão no documento (só a ONT 7 aparece, na cena 8). Ficaram por terem sido propostos no plano aprovado; se preferir, trocam-se por «Casa A/B/C» + ONT 7.
+- Sugestões didácticas não aplicadas (contrariam o guião ou ficam para o polimento): legenda de cores filtrada por cena; trocar «Downstream/Upstream» nos títulos.
+
 ## Registo de sessões
 - **2026-10-27** — Plano criado. Versões verificadas no npm: three 0.186.1, gsap 3.15.0, postprocessing 6.39.5, vite 8.3.5, vitest 5.0.5. Node 22.
 - **2026-10-27** — Passos 2–4: esqueleto, modelos procedurais, cenas 0–3, testes (vitest + jsdom), capturas com Playwright, workflow do Pages. Respostas pendentes do utilizador assumidas: casas = ONT 1, 3, 5, 7; comandos da cena 8 ficam com reticências.
