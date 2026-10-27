@@ -39,8 +39,8 @@ export default {
     ctx.adicionar(setas, { brilho: true });
 
     const posicoes = [
-      new THREE.Vector3((olt.x + ont1.x) / 2, 9.2, -1),
-      new THREE.Vector3(-9.4, 1.8, 3.6),
+      new THREE.Vector3((olt.x + ont1.x) / 2 + 2, 7.4, -1),
+      new THREE.Vector3(-11, 1.3, 3.6),
       ont3.clone().add(new THREE.Vector3(0, 1.0, 0.4)),
     ];
     const actores = [['olt', 'ont'], [rede.fibras.alimentacao, 'ont'], ['ont']];
