@@ -45,18 +45,20 @@ const url = servidor.resolvedUrls.local[0];
 const browser = await playwright.chromium.launch({
   args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
 });
-const pagina = await browser.newPage({ viewport: { width: largura, height: altura }, deviceScaleFactor: 1 });
 const erros = [];
-pagina.on('console', (m) => m.type() === 'error' && erros.push(m.text()));
-pagina.on('pageerror', (e) => erros.push(String(e)));
 
 const alvos =
   args.cena !== undefined
     ? [{ cena: Number(args.cena), passo: Number(args.passo ?? 0), t: Number(args.t ?? 1) }]
-    : PADRAO.filter((a) => a.cena <= Number(args.ate ?? 10)); // --ate N: só as cenas 0..N
+    : PADRAO.filter((a) => a.cena >= Number(args.de ?? 0) && a.cena <= Number(args.ate ?? 10)); // --de M --ate N: só as cenas M..N
 mkdirSync(resolve(raiz, 'capturas'), { recursive: true });
 
 for (const a of alvos) {
+  // Uma página nova por captura (o SwiftShader é lento e uma página ocupada atrasa a seguinte)
+  const pagina = await browser.newPage({ viewport: { width: largura, height: altura }, deviceScaleFactor: 1 });
+  pagina.setDefaultTimeout(120000);
+  pagina.on('console', (m) => m.type() === 'error' && erros.push(m.text()));
+  pagina.on('pageerror', (e) => erros.push(String(e)));
   const extra = `${args.sentido ? `&sentido=${args.sentido}` : ''}${args.analogia ? '&analogia=1' : ''}${args.cam ? `&cam=${args.cam}` : ''}`;
   // Query única para forçar um carregamento novo da página em cada captura.
   await pagina.goto(`${url}?captura=${Date.now()}#cena=${a.cena}&passo=${a.passo}&t=${a.t}${extra}`);
@@ -73,6 +75,7 @@ for (const a of alvos) {
     return new Promise((r) => (img.onload = r));
   });
   await pagina.screenshot({ path: saida });
+  await pagina.close();
   console.log(`✓ cena ${a.cena} (passo ${a.passo}, t=${a.t}) → ${saida}`);
 }
 
