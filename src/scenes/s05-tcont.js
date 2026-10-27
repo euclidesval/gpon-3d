@@ -24,8 +24,9 @@ export default {
     rede.rotulos.casas.forEach((r) => (r.visible = true));
     // Um contentor T-CONT por cima de cada casa
     const tconts = rede.casas.map((casa) => {
-      const tc = criarTcont(ctx, { largura: 1.5, altura: 0.9, profundidade: 0.8 });
-      tc.position.set(casa.position.x + 1.2, 5.7, casa.position.z - 0.5);
+      // No relvado, à frente da casa (os números das ONT ficam por cima do telhado)
+      const tc = criarTcont(ctx, { largura: 1.4, altura: 0.85, profundidade: 0.8 });
+      tc.position.set(casa.position.x + 1.7, 0.5, casa.position.z + 2.75);
       return tc;
     });
     // Barra de janelas por cima da fibra de alimentação
@@ -91,7 +92,7 @@ function enviarMapa(ctx, tl, t0, larg) {
     tl.add(viajar(copia, curva, { de: 0, ate: 1, duracao: 1.4 }), t0 + 2.4);
     tl.set(copia, { visible: false }, t0 + 3.8);
     const tc = E.tconts[k];
-    tl.to(tc.userData.barras.children.map((b) => b.material), { emissiveIntensity: 1.6, duration: 0.2, yoyo: true, repeat: 3 }, t0 + 3.8);
+    tl.to(tc.userData.faces.material, { opacity: 0.55, duration: 0.2, yoyo: true, repeat: 3 }, t0 + 3.8);
   });
   tl.call(ctx.destacarEm(['ont']), null, t0 + 3.8);
   return t0 + 4.6;
@@ -144,7 +145,7 @@ function envio(ctx) {
 function criarFila(ctx) {
   const tc = E.tconts[1];
   const g = new THREE.Group();
-  g.position.copy(tc.position).add(new THREE.Vector3(1.25, -0.45, 0));
+  g.position.copy(tc.position).add(new THREE.Vector3(-1.25, -0.4, 0));
   ctx.adicionar(g);
   const cubos = [];
   for (let i = 0; i < 6; i++) {
@@ -154,7 +155,7 @@ function criarFila(ctx) {
     g.add(c);
     cubos.push(c);
   }
-  const r = ctx.rotulo('<b>Fila a crescer</b><span>muito tráfego</span>', new THREE.Vector3(0, 1.9, 0), { pai: g, visivel: false });
+  const r = ctx.rotulo('<b>Fila a crescer</b><span>muito tráfego</span>', new THREE.Vector3(-0.3, 1.8, 0), { pai: g, visivel: false });
   E.fila = { g, cubos, r, n: 0 };
   return E.fila;
 }
@@ -177,7 +178,7 @@ function dba(ctx) {
   tl.call(ctx.destacarEm(['ont']), null, 0.2);
   tl.set(fila.r, { visible: true }, 0.3);
   fila.cubos.forEach((c, i) => tl.set(c, { visible: true }, 0.4 + i * 0.35));
-  const quieta = ctx.rotulo('<b>💤 quieta</b><span>pouco tráfego</span>', E.tconts[2].position.clone().add(new THREE.Vector3(0, 1.3, 0)), {});
+  const quieta = ctx.rotulo('<b>💤 quieta</b><span>pouco tráfego</span>', E.tconts[2].position.clone().add(new THREE.Vector3(-1.2, 1.4, 0)), {});
   tl.set(quieta, { visible: true }, 1.0);
   // DBA na OLT
   const dbaObj = rede.olt.userData.dba;

@@ -82,7 +82,7 @@ export class Motor {
       kernelSize: KernelSize.SMALL,
       xRay: true,
     });
-    this.tonemap = new ToneMappingEffect({ mode: ToneMappingMode.ACES_FILMIC });
+    this.tonemap = new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }) // preserva o tom das cores fixas (o ACES puxa o azul para lilás);
     this.passoEfeitos = null;
   }
 

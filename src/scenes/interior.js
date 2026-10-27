@@ -49,11 +49,11 @@ export function mostrarAmpliacao(amp, duracao = 0.6) {
 export function criarTcont(ctx, { numero = null, largura = 1.2, altura = 0.9, profundidade = 0.6, pai = null } = {}) {
   const g = new THREE.Group();
   const geo = new THREE.BoxGeometry(largura, altura, profundidade);
-  const faces = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: CORES.tcont, emissive: CORES.tcont, emissiveIntensity: 0.25, transparent: true, opacity: 0.28, depthWrite: false, roughness: 0.6, side: THREE.DoubleSide }));
+  const faces = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: CORES.tcont, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide }));
   const arestas = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: CORES.tcont }));
   // Barras grossas nas arestas (as linhas WebGL têm sempre 1 px)
   const barras = new THREE.Group();
-  const matBarra = new THREE.MeshStandardMaterial({ color: CORES.tcont, emissive: CORES.tcont, emissiveIntensity: 1.1, roughness: 0.5 });
+  const matBarra = new THREE.MeshBasicMaterial({ color: CORES.tcont });
   const e = 0.06;
   for (const [sx, sy, sz, px, py, pz] of [
     [largura, e, e, 0, altura / 2, profundidade / 2],
@@ -86,7 +86,7 @@ export function criarTcont(ctx, { numero = null, largura = 1.2, altura = 0.9, pr
 // Compartimento de uma GEM port (cor = tipo de tráfego).
 export function criarGem(ctx, cor, texto, { largura = 0.9, altura = 0.5, profundidade = 0.4, pai = null } = {}) {
   const geo = new THREE.BoxGeometry(largura, altura, profundidade);
-  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: cor, emissive: cor, emissiveIntensity: 0.6, roughness: 0.35 }));
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: cor, emissive: cor, emissiveIntensity: 0.55, roughness: 0.35 }));
   m.castShadow = true;
   m.add(moldura(largura, altura, profundidade, '#ffffff', 0.035));
   const r = ctx.rotulo(`<b>${texto}</b>`, new THREE.Vector3(0, 0, profundidade / 2 + 0.02), { classe: 'rotulo rotulo-gem', pai: m, visivel: true });

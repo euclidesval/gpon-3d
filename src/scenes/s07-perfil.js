@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { CORES } from '../core/colors.js';
-import { criarPacote } from './util.js';
+import { criarPacote, tuboLinha } from './util.js';
 import { viajar } from '../models/pulse.js';
 import { criarAmpliacao, mostrarAmpliacao, criarTcont, criarGem, etiquetaVlan, encaixar } from './interior.js';
 import { escapar } from '../ui/texto.js';
@@ -50,8 +50,8 @@ export default {
         faixa.add(tr);
       }
     }
-    const rFaixa = ctx.rotulo('<b>dba-profile 10 · tipo 3</b><span>▮ 10 Mbit/s garantidos · ┅ até 100 Mbit/s</span>', new THREE.Vector3(0, -0.05, 0.6), { pai: faixa, visivel: true });
-    rFaixa.center.set(0.5, 0);
+    const rFaixa = ctx.rotulo('<b>dba-profile 10 · tipo 3</b><span>▮ 10 Mbit/s garantidos · ┅ até 100 Mbit/s</span>', new THREE.Vector3(-1.4, 0.05, 0), { pai: faixa, visivel: true });
+    rFaixa.center.set(1, 0.5);
     faixa.visible = false;
 
     const tcont = criarTcont(ctx, { numero: 1, largura: 1.5, altura: 1.05, profundidade: 0.7, pai: amp });
@@ -63,10 +63,18 @@ export default {
 
     // Etiqueta VLAN 100 ligada por uma seta à GEM 2
     const suporte = new THREE.Object3D();
-    suporte.position.set(-1.0, 0.25, 0.2);
+    suporte.position.set(-0.95, 0.3, 0.25);
     amp.add(suporte);
     const vlan = etiquetaVlan(ctx, 100, suporte, new THREE.Vector3(0, 0, 0), { visivel: false });
-    const seta = new THREE.ArrowHelper(new THREE.Vector3(1, -0.55, 0).normalize(), new THREE.Vector3(-0.85, 0.12, 0.2), 0.95, 0xffffff, 0.16, 0.1);
+    // Seta grossa VLAN 100 → GEM 2
+    const seta = new THREE.Group();
+    const origem = new THREE.Vector3(-0.85, 0.2, 0.25);
+    const destino = new THREE.Vector3(-0.15, -0.35, 0.25);
+    seta.add(tuboLinha(new THREE.LineCurve3(origem, destino), '#ffffff', { raio: 0.035, emissivo: 0.8 }));
+    const ponta = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.22, 16), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
+    ponta.position.copy(destino);
+    ponta.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), destino.clone().sub(origem).normalize());
+    seta.add(ponta);
     seta.visible = false;
     amp.add(seta);
 

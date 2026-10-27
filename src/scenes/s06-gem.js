@@ -79,7 +79,7 @@ function vlanParaGem(ctx) {
   // ONT → compartimento da GEM 2 (vista ampliada)
   tl.add(mover(pac, E.pOnt, E.pGem[0].clone().add(new THREE.Vector3(0, 0.05, 0.25)), 1.2), 4.5);
   tl.to(E.interior.gems[0].material, { emissiveIntensity: 1.4, duration: 0.25, yoyo: true, repeat: 3 }, 5.7);
-  tl.add(marca(ctx, 'VLAN 100 → GEM 2', 'sim', E.pGem[0].clone().add(new THREE.Vector3(0, 0.75, 0.3)), { duracao: 2.4 }), 5.7);
+  tl.add(marca(ctx, 'VLAN 100 → GEM 2', 'sim', E.pGem[0].clone().add(new THREE.Vector3(-1.6, -0.2, 0.4)), { duracao: 2.4 }), 5.7);
   tl.to({}, { duration: 1.0 });
   E.pacote = pac;
   return tl;
@@ -91,7 +91,7 @@ function sairPeloTcont(ctx) {
   const pac = E.pacote;
   tl.call(ctx.destacarEm(['ont']), null, 0.1);
   // O contentor do T-CONT 1 acende: a GEM 2 está lá dentro
-  tl.to(tc.userData.barras.children.map((b) => b.material), { emissiveIntensity: 1.8, duration: 0.3, yoyo: true, repeat: 3 }, 0.3);
+  tl.to(tc.userData.faces.material, { opacity: 0.55, duration: 0.3, yoyo: true, repeat: 3 }, 0.3);
   const espera = ctx.rotulo('<div class="cartao-info" style="border-color:#f97316"><b>⏱ À espera da janela do T-CONT 1</b><span class="conta">3</span></div>', E.pTcont.clone().add(new THREE.Vector3(1.5, 0.75, 0.3)), {});
   tl.set(espera, { visible: true }, 0.6);
   for (let s = 2; s >= 0; s--) tl.call(() => (espera.element.querySelector('.conta').textContent = s ? String(s) : 'Janela aberta ✓'), null, 0.6 + (3 - s) * 0.7);
