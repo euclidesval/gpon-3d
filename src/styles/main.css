@@ -22,6 +22,10 @@
 @media (min-width: 1600px) {
   :root { font-size: 20px; }
 }
+/* Projector Full HD: textos principais ≥ 18 px */
+@media (min-width: 1800px) {
+  :root { font-size: 22px; }
+}
 @media (max-width: 900px) {
   :root { font-size: 16px; }
 }
@@ -169,7 +173,7 @@ code {
   top: 7.4rem;
   max-width: calc(100vw - 24px - 15rem);
 }
-.painel-actores .painel-titulo { width: auto; display: inline-block; }
+.painel-actores .painel-titulo { width: auto; display: inline-block; white-space: nowrap; }
 .painel-actores:not(.aberto) { display: flex; align-items: center; background: transparent; border-color: transparent; backdrop-filter: none; }
 .painel-actores:not(.aberto) .painel-titulo { background: var(--fundo-painel); border: 1px solid var(--borda-painel); border-radius: 10px; margin-right: 0.35rem; }
 .lista-actores { list-style: none; margin: 0; padding: 0 0.4rem 0.4rem; display: grid; gap: 0.25rem; width: 17rem; }
@@ -203,7 +207,7 @@ code {
 .painel-notas .notas-corpo { display: none; }
 .painel-notas.aberto { width: min(26rem, 40vw); overflow-y: auto; }
 .painel-notas.aberto .painel-titulo { writing-mode: horizontal-tb; }
-.painel-notas.aberto .notas-corpo { display: block; padding: 0 1rem 0.8rem; font-size: 0.85rem; line-height: 1.5; color: #dde5ec; }
+.painel-notas.aberto .notas-corpo { display: block; padding: 0 1rem 0.8rem; font-size: 0.95rem; line-height: 1.5; color: #dde5ec; }
 .notas-corpo p { margin: 0 0 0.7em; }
 
 /* Legenda da cena (máximo 2 linhas) */
@@ -270,6 +274,8 @@ code {
   .cabecalho { max-width: 52vw; }
   .cabecalho h1 { font-size: 1.15rem; }
   .painel-actores { top: 6rem; }
+  .painel-actores:not(.aberto) .lista-actores li:not(.ativo) { display: none; }
+  .ferramentas { right: 3.6rem; }
   .legenda-ecra p { font-size: 1rem; }
 }
 
@@ -547,11 +553,12 @@ code {
   font-size: 0.74rem;
   line-height: 1.55;
 }
+.painel-comandos .comando:not(.activo) { display: none; }
 .painel-comandos .comando { color: #7d8894; padding: 0.15rem 0.3rem; border-radius: 6px; transition: background 0.3s, color 0.3s; }
-.painel-comandos .comando.activo { color: #d5dde5; background: rgba(255, 255, 255, 0.05); }
+.painel-comandos .comando.activo { color: #8994a0; background: rgba(255, 255, 255, 0.05); }
 .painel-comandos .prompt { color: #5f6b77; }
 .painel-comandos mark { background: transparent; color: inherit; border-radius: 4px; padding: 0 0.15rem; }
-.painel-comandos mark.activa { background: rgba(255, 233, 168, 0.25); color: #fff; box-shadow: inset 0 -2px 0 var(--destaque); }
+.painel-comandos mark.activa { background: #ffe9a8; color: #14100a; font-weight: 700; }
 .pilha-vlan { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 4px; }
 .pilha-vlan .etiqueta-vlan { margin: 0; }
 .etiqueta-vlan small { font-size: 0.62rem; color: #444; }
@@ -581,12 +588,12 @@ code {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 .cartao-resumo h2 { margin: 0 0 0.6rem; font-size: 1.15rem; }
-.tabela-resumo { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.tabela-resumo { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 .tabela-resumo th, .tabela-resumo td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); vertical-align: top; }
 .tabela-resumo thead th { color: var(--texto-suave); font-weight: 600; font-size: 0.8rem; }
 .tabela-resumo tbody th { white-space: nowrap; }
 .tabela-resumo tr { transition: background 0.3s; }
-.tabela-resumo tr.activa { background: rgba(255, 233, 168, 0.12); }
+.tabela-resumo tr.activa { background: rgba(255, 233, 168, 0.22); box-shadow: inset 4px 0 0 var(--destaque); }
 .seta-down { color: var(--down); }
 .seta-up { color: var(--up); }
 .quiz-cabecalho { color: var(--texto-suave); font-size: 0.8rem; }
@@ -602,3 +609,6 @@ code {
 .quiz-seguinte { display: block; margin-top: 0.6rem; margin-left: auto; font-weight: 700; }
 .quiz-fim { text-align: center; padding: 1rem 0; }
 .quiz-pontos { font-size: 3rem; font-weight: 900; }
+
+/* Contador de FPS (?fps) */
+.fps { position: fixed; left: 8px; bottom: 8px; font: 600 0.7rem ui-monospace, monospace; color: #9fe8a8; background: rgba(0, 0, 0, 0.6); padding: 0.15rem 0.4rem; border-radius: 6px; z-index: 20; pointer-events: none; }

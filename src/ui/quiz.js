@@ -5,18 +5,20 @@ export function montarQuiz(el, perguntas, siglas = {}) {
   let i = 0;
   let certas = 0;
   let respondida = false;
+  let falhadas = [];
 
   const desenhar = () => {
     if (i >= perguntas.length) {
       el.innerHTML = `
         <div class="quiz-fim">
           <div class="quiz-pontos">${certas} / ${perguntas.length}</div>
-          <p>${certas === perguntas.length ? 'Excelente! Percebeste tudo.' : certas >= 3 ? 'Muito bem! Revê as cenas das perguntas que falhaste.' : 'Volta a ver as cenas e tenta outra vez.'}</p>
+          <p>${certas === perguntas.length ? 'Excelente! Percebeste tudo.' : `${certas >= 3 ? 'Muito bem!' : 'Volta a ver as cenas e tenta outra vez.'} Falhaste: ${falhadas.map((n) => `pergunta ${n}`).join(', ')} (a explicação indica a cena).`}</p>
           <button class="quiz-repetir">⟲ Repetir o teste</button>
         </div>`;
       el.querySelector('.quiz-repetir').addEventListener('click', () => {
         i = 0;
         certas = 0;
+        falhadas = [];
         desenhar();
       });
       return;
@@ -37,6 +39,7 @@ export function montarQuiz(el, perguntas, siglas = {}) {
     const q = perguntas[i];
     const acertou = k === q.certa;
     if (acertou) certas++;
+    else falhadas.push(i + 1);
     el.querySelectorAll('.quiz-opcao').forEach((b) => {
       const n = Number(b.dataset.k);
       b.disabled = true;
@@ -69,11 +72,14 @@ export function montarQuiz(el, perguntas, siglas = {}) {
   };
 }
 
+// Cor do nome de cada actor (só o OMCI tem cor fixa própria)
+const COR_ACTOR = { OMCI: '#c084fc' };
+
 export function tabelaResumo(linhas, siglas = {}) {
   return `<table class="tabela-resumo">
     <thead><tr><th>Actor</th><th><span class="seta-down">⬇</span> Downstream</th><th><span class="seta-up">⬆</span> Upstream</th></tr></thead>
     <tbody>${linhas
-      .map((l, k) => `<tr data-linha="${k}"><th>${formatar(l.actor, siglas)}</th><td>${formatar(l.downstream, siglas)}</td><td>${formatar(l.upstream, siglas)}</td></tr>`)
+      .map((l, k) => `<tr data-linha="${k}"><th style="color:${COR_ACTOR[l.actor] ?? 'inherit'}">${formatar(l.actor, siglas)}</th><td>${formatar(l.downstream, siglas)}</td><td>${formatar(l.upstream, siglas)}</td></tr>`)
       .join('')}</tbody></table>`;
 }
 

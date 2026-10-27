@@ -19,7 +19,8 @@
     "ITU-T": "Sector de normalização das telecomunicações da União Internacional de Telecomunicações.",
     "IPTV": "Televisão sobre IP: canais de TV entregues pela rede de dados.",
     "dying gasp": "«Último suspiro»: aviso que a ONT envia à OLT quando perde a energia.",
-    "Mbit/s": "Megabits por segundo: medida da velocidade (quantidade de dados por segundo)."
+    "Mbit/s": "Megabits por segundo: medida da velocidade (quantidade de dados por segundo).",
+    "rede de transporte": "A rede do operador que liga a OLT ao resto da rede."
   },
   "actores": [
     {
@@ -529,7 +530,9 @@
       "nota": [
         "`ont add 12 7 … omci ont-lineprofile-id 100 …` — regista a ONT 7 e associa-a ao perfil de linha 100; a OLT envia-lhe a configuração pelo OMCI. O número de série e a descrição estão anonimizados.",
         "`service-port 138 vlan 1410 gpon 0/1/12 ont 7 gemport 2 … user-vlan 100 tag-transform translate-and-add inner-vlan 2000` — diz à OLT o que fazer com o tráfego da GEM 2 da ONT 7: a VLAN 100 é traduzida para a VLAN interna 2000 e recebe a VLAN externa 1410.",
-        "Na Huawei, `gemport 2` é o índice da GEM no perfil de linha; o identificador físico da GEM port na fibra é atribuído pela OLT."
+        "`translate-and-add`: «translate» troca a VLAN 100 do cliente pela 2000 (interna, `inner-vlan 2000`); «add» acrescenta por fora a VLAN 1410 (externa, a `vlan 1410` do próprio `service-port`).",
+        "Na Huawei, `gemport 2` é o índice da GEM no perfil de linha; o identificador físico da GEM port na fibra é atribuído pela OLT.",
+        "O `ont add` corre dentro de `interface gpon 0/1` (porta 12); o `service-port` corre no modo de configuração global."
       ],
       "actorAtivo": [
         "omci",
@@ -560,36 +563,42 @@
         {
           "id": "ontadd",
           "rotulo": "1. ont add",
-          "actor": "omci"
+          "actor": "omci",
+          "legenda": "ont add: a OLT regista a ONT 7 e envia-lhe pelo OMCI o perfil 100 (T-CONT 1 e GEM 2)."
         },
         {
           "id": "router",
           "rotulo": "2. Portátil → router",
-          "actor": "router"
+          "actor": "router",
+          "legenda": "No router, o tráfego do portátil recebe a etiqueta VLAN 100."
         },
         {
           "id": "gem",
           "rotulo": "3. GEM 2 espera a janela",
-          "actor": "ont"
+          "actor": "ont",
+          "legenda": "Na ONT, a VLAN 100 entra na GEM 2 e espera pela janela do T-CONT 1."
         },
         {
           "id": "fibra",
           "rotulo": "4. Fibra a subir",
-          "actor": "splitter"
+          "actor": "ont",
+          "legenda": "Na fibra, o pacote viaja como luz âmbar a subir, até à OLT."
         },
         {
           "id": "serviceport",
           "rotulo": "5. service-port",
-          "actor": "olt"
+          "actor": "olt",
+          "legenda": "service-port: a OLT troca a VLAN 100 pela 2000 (interna) e junta por fora a 1410 (externa)."
         },
         {
           "id": "saida",
           "rotulo": "6. Para a rede de transporte",
-          "actor": "olt"
+          "actor": "olt",
+          "legenda": "Com as duas etiquetas, como um envelope dentro de outro, o pacote sai para a rede de transporte."
         }
       ],
       "avisos": [
-        "Valores ilustrativos (perfil 100, DBA 10, VLAN 100 → 2000 + 1410)."
+        "Perfil 100 com valores ilustrativos; número de série e descrição do cliente anonimizados."
       ]
     },
     {
@@ -626,22 +635,26 @@
         {
           "id": "omci",
           "rotulo": "OMCI = rádio",
-          "actor": "omci"
+          "actor": "omci",
+          "legenda": "OMCI é o rádio com que a central dá instruções ao condutor."
         },
         {
           "id": "tcont",
           "rotulo": "T-CONT = autorização",
-          "actor": "dba"
+          "actor": "dba",
+          "legenda": "T-CONT é a autorização de passagem: quando o camião pode avançar e a que velocidade."
         },
         {
           "id": "gem",
           "rotulo": "GEM = compartimentos",
-          "actor": "ont"
+          "actor": "ont",
+          "legenda": "GEM ports são os compartimentos etiquetados do camião: Internet num, voz noutro."
         },
         {
           "id": "perfil",
           "rotulo": "Perfil = manual de carga",
-          "actor": "olt"
+          "actor": "olt",
+          "legenda": "O perfil de linha é o manual de carga, igual para todos os camiões do mesmo tipo."
         }
       ],
       "avisos": []
@@ -654,7 +667,7 @@
       "nota": [
         "OMCI: configurar, monitorizar, alarmes e actualizar, à distância.",
         "T-CONT: quanto e quando cada ONT pode enviar a subir (Alloc-ID, DBA).",
-        "GEM port: um canal lógico por serviço; a VLAN é mapeada para a GEM.",
+        "GEM port: um canal lógico, normalmente um por serviço; a VLAN é mapeada para a GEM.",
         "Perfil de linha: T-CONT + DBA + GEM ports + VLAN num modelo reutilizável."
       ],
       "actorAtivo": [
@@ -687,7 +700,8 @@
         {
           "id": "teste",
           "rotulo": "Teste rápido",
-          "actor": "olt"
+          "actor": "olt",
+          "legenda": "Escolhe uma resposta em cada pergunta. No fim vês quantas acertaste."
         }
       ],
       "avisos": []
@@ -724,12 +738,12 @@
     {
       "pergunta": "Porque é que as ONT não podem transmitir todas ao mesmo tempo a subir?",
       "opcoes": [
-        "Porque partilham a mesma fibra e os sinais colidiriam",
-        "Porque o splitter só deixa passar uma de cada vez",
-        "Porque a OLT está desligada a subir"
+        "Porque partilham a mesma fibra e os sinais chocariam",
+        "Porque o splitter escolhe qual ONT pode passar",
+        "Porque cada ONT tem uma fibra só sua até à OLT"
       ],
       "certa": 0,
-      "explicacao": "Todas as ONT partilham a mesma fibra a subir. Sem janelas de tempo (TDMA), os sinais encontrar-se-iam e ninguém se entenderia. O splitter é passivo: não escolhe nada."
+      "explicacao": "Todas as ONT partilham a mesma fibra a subir. Sem janelas de tempo (TDMA), os sinais chocariam. O splitter é passivo: não escolhe nada. (Cena «Upstream».)"
     },
     {
       "pergunta": "Onde é que o técnico configura a ONT?",
@@ -739,7 +753,7 @@
         "Na OLT, que envia tudo à ONT pelo OMCI"
       ],
       "certa": 2,
-      "explicacao": "O técnico configura na OLT. A OLT envia a configuração à ONT pelo OMCI, por dentro da própria fibra."
+      "explicacao": "O técnico configura na OLT. A OLT envia a configuração à ONT pelo OMCI, por dentro da própria fibra. (Cena «OMCI».)"
     },
     {
       "pergunta": "O que decide quanto e quando a ONT pode enviar?",
@@ -749,7 +763,7 @@
         "O router do cliente"
       ],
       "certa": 1,
-      "explicacao": "O T-CONT (identificado pelo Alloc-ID) recebe janelas no mapa de banda; o DBA ajusta-as em tempo real."
+      "explicacao": "O T-CONT (identificado pelo Alloc-ID) recebe janelas no mapa de banda; o DBA ajusta-as em tempo real. (Cena «T-CONT».)"
     },
     {
       "pergunta": "Para que GEM port vai a VLAN 100 no nosso exemplo?",
@@ -759,17 +773,17 @@
         "GEM 100"
       ],
       "certa": 0,
-      "explicacao": "No perfil de linha 100, `gem mapping 2 0 vlan 100` liga a VLAN 100 à GEM 2 (valores ilustrativos)."
+      "explicacao": "No perfil de linha 100, a VLAN 100 está ligada à GEM 2 (valores ilustrativos). (Cenas «GEM port» e «Perfil de linha».)"
     },
     {
       "pergunta": "O que contém um perfil de linha?",
       "opcoes": [
-        "Só a palavra-passe da ONT",
-        "Os T-CONT, o perfil DBA de cada um, as GEM ports e o mapeamento VLAN → GEM",
+        "Só a VLAN do cliente",
+        "Os T-CONT, as GEM ports e a ligação VLAN → GEM",
         "A lista de clientes da OLT"
       ],
       "certa": 1,
-      "explicacao": "O perfil de linha é um modelo reutilizável com T-CONT, perfil DBA, GEM ports e mapeamento VLAN → GEM, aplicado a muitas ONT."
+      "explicacao": "O perfil de linha é um modelo reutilizável com T-CONT (e o seu perfil DBA), GEM ports e mapeamento VLAN → GEM, aplicado a muitas ONT. (Cena «Perfil de linha».)"
     }
   ]
 }

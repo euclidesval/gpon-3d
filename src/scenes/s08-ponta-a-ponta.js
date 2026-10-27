@@ -15,14 +15,14 @@ const CAM = {
   casa: [[31.4, 3.0, 5.6], [31.4, 1.3, -1.2]],
   modelo: [[34.8, 4.4, 11.5], [32.0, 1.0, 0.6]],
   olt: [[-14.4, 3.8, 6.4], [-17.6, 2.2, -1.2]],
-  saida: [[-13.5, 7.5, 14], [-23, 2.6, -1]],
+  saida: [[-14, 5.5, 15], [-22, 3.0, -1]],
 };
 // Partes dos comandos destacadas em cada passo (índices dos passos)
 const TOKENS = [
   { cmd: 0, txt: 'ont add 12 7', passos: [0] },
   { cmd: 0, txt: 'omci', passos: [0] },
   { cmd: 0, txt: 'ont-lineprofile-id 100', passos: [0, 2] },
-  { cmd: 1, txt: 'vlan 1410', passos: [4] },
+  { cmd: 1, txt: 'vlan 1410', passos: [4, 5] },
   { cmd: 1, txt: 'ont 7', passos: [4] },
   { cmd: 1, txt: 'gemport 2', passos: [2, 4] },
   { cmd: 1, txt: 'user-vlan 100', passos: [1, 4] },
@@ -42,7 +42,9 @@ function htmlComandos(comandos) {
         const pos = h.indexOf(alvo);
         if (pos >= 0) h = `${h.slice(0, pos)}<mark data-k="${k}">${alvo}</mark>${h.slice(pos + alvo.length)}`;
       });
-      return `<div class="comando" data-c="${i}"><span class="prompt">OLT(config)#</span> ${h}</div>`;
+      // O ont add corre dentro da interface GPON 0/1; o service-port no modo de configuração global
+      const prompt = i === 0 ? 'OLT(config-if-gpon-0/1)#' : 'OLT(config)#';
+      return `<div class="comando" data-c="${i}"><span class="prompt">${prompt}</span> ${h}</div>`;
     })
     .join('');
 }
@@ -73,7 +75,7 @@ export default {
       olt.clone().add(new THREE.Vector3(-14, 3.2, 3)),
     ]);
     ctx.adicionar(tuboLinha(uplink, '#9aa3ad', { raio: 0.06, emissivo: 0.2 }));
-    const rUplink = ctx.rotulo('<b>Rede de transporte</b><span>VLAN 1410</span>', uplink.getPointAt(0.85).add(new THREE.Vector3(0, 0.6, 0)), {});
+    const rUplink = ctx.rotulo('<b>Rede de transporte</b><span>VLAN 1410</span>', uplink.getPointAt(0.6).add(new THREE.Vector3(0, -0.9, 0)), {});
     const p = (o) => o.getWorldPosition(new THREE.Vector3());
     E = {
       painel,
@@ -165,7 +167,7 @@ function subir(ctx, tl) {
   const luz = criarPacote(ctx, CORES.up, null);
   etiquetaVlan(ctx, 100, luz, new THREE.Vector3(0, 0.35, 0));
   tl.add(viajar(luz, rede.curvas.derivacoes[K], { de: 1, ate: 0, duracao: 2.0 }), 0.6);
-  tl.call(ctx.destacarEm(['splitter']), null, 2.6);
+  tl.call(ctx.destacarEm([rede.fibras.alimentacao]), null, 2.6);
   tl.add(viajar(luz, rede.curvas.alimentacao, { de: 1, ate: 0, duracao: 3.0 }), 2.6);
   tl.call(ctx.destacarEm(['olt']), null, 5.6);
 }

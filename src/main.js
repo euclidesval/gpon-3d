@@ -72,6 +72,24 @@ function arrancar() {
     ctx.camaraPara(v.slice(0, 3), v.slice(3, 6), 0);
   }
 
+  // ?fps mostra os FPS e o nível de qualidade (útil para testar no portátil da apresentação)
+  if (params.has('fps')) {
+    const el = document.createElement('div');
+    el.className = 'fps';
+    document.body.appendChild(el);
+    let n = 0;
+    let acc = 0;
+    motor.aoAtualizar.add((dt) => {
+      n++;
+      acc += dt;
+      if (acc >= 0.5) {
+        el.textContent = `${Math.round(n / acc)} fps · ${motor.nivel}`;
+        n = 0;
+        acc = 0;
+      }
+    });
+  }
+
   motor.iniciar();
   carregar.remove();
 }

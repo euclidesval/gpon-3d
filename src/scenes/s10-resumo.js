@@ -15,7 +15,7 @@ export default {
       const el = ctx.sobreposicao(`<h2>Quem faz o quê</h2>${tabelaResumo(C.resumo, C.siglas)}`, 'cartao-resumo interactiva');
       const linhas = el ? [...el.querySelectorAll('tbody tr')] : [];
       C.resumo.forEach((_, k) => {
-        const t = 0.6 + k * 1.2;
+        const t = 0.6 + k * 2.4;
         tl.call(() => {
           linhas.forEach((l, m) => l.classList.toggle('activa', m === k));
           ctx.destacar([ACTORES[k]]);
@@ -24,7 +24,7 @@ export default {
       tl.call(() => {
         linhas.forEach((l) => l.classList.remove('activa'));
         ctx.destacar([]);
-      }, null, 0.6 + C.resumo.length * 1.2);
+      }, null, 0.6 + C.resumo.length * 2.4);
     } else {
       // A tabela do passo anterior sai: o teste fica sozinho no ecrã
       ctx.ui?.limparCena?.();

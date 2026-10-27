@@ -65,7 +65,11 @@ export default {
       g.visible = false;
       return g;
     });
-    E = { camioes, torre, semaforo, omci, tcont, gems, cam: camioes[K], ligacoes: [] };
+    const espera = criarCamiao({ corCabine: '#c9ccd1' });
+    espera.position.set(rede.casas[K].position.x + 4.8, 0, 6.4);
+    espera.visible = false;
+    ctx.adicionar(espera);
+    E = { camioes, torre, semaforo, omci, tcont, gems, cam: camioes[K], ligacoes: [], espera, pOnt: rede.onts[K].getWorldPosition(new THREE.Vector3()) };
   },
   passo(ctx, i) {
     const tl = gsap.timeline({ paused: true });
@@ -108,18 +112,26 @@ function radio(ctx, tl) {
 function autorizacao(ctx, tl) {
   const cam = E.cam.position;
   tl.add(ctx.tweenCamara([cam.x - 2, 4.6, cam.z + 9], [cam.x - 1.8, 1.2, cam.z - 1.2], 1.4), 0);
-  tl.call(ctx.destacarEm(['dba']), null, 0.3);
+  tl.call(ctx.destacarEm(['ont']), null, 0.3);
   aparecer(tl, E.tcont, 0.8);
   // O contentor do T-CONT transforma-se no semáforo
   desaparecer(tl, E.tcont, 2.4);
   aparecer(tl, E.semaforo, 2.6);
-  mostrarRotulo(tl, ligacao(ctx, 'T-CONT', 'autorização de passagem', E.semaforo.position.clone().add(new THREE.Vector3(0, 3.6, 0))), 2.8);
+  mostrarRotulo(tl, ligacao(ctx, 'T-CONT', 'autorização de passagem', E.semaforo.position.clone().add(new THREE.Vector3(-1.6, 2.4, 0.6))), 2.8);
+  // «A que velocidade»: limite mínimo/máximo (valores do perfil 100, ilustrativos)
+  const velocidade = ctx.rotulo('<b>🚦 velocidade</b><span>mín. 10 · máx. 100 Mbit/s (ilustrativo)</span>', E.semaforo.position.clone().add(new THREE.Vector3(1.4, 1.4, 0.6)), {});
+  tl.set(velocidade, { visible: true }, 3.4);
   const L = E.semaforo.userData.luzes;
   tl.to(L.vermelho.material, { emissiveIntensity: 0.05, duration: 0.2 }, 4.4);
   tl.to(L.verde.material, { emissiveIntensity: 3, duration: 0.2 }, 4.4);
-  // Com luz verde, o camião avança na sua vez
+  // Outro camião espera a sua vez atrás (a estrada é partilhada)
+  const outro = E.espera;
+  aparecer(tl, outro, 1.0);
+  const rEspera = ctx.rotulo('<b>⏸ espera a sua vez</b>', outro.position.clone().add(new THREE.Vector3(0, 2.6, 0)), {});
+  tl.set(rEspera, { visible: true }, 1.4);
+  tl.set(rEspera, { visible: false }, 7.2);
+  // Com luz verde, o camião da ONT 7 avança na sua vez
   tl.to(E.cam.position, { x: E.cam.position.x - 3.2, duration: 1.8, ease: 'power1.inOut' }, 4.7);
-  tl.to(E.cam.position, { x: E.cam.position.x, duration: 0.01 }, 6.9);
   tl.to(L.verde.material, { emissiveIntensity: 0.05, duration: 0.2 }, 6.8);
   tl.to(L.vermelho.material, { emissiveIntensity: 2.5, duration: 0.2 }, 6.8);
 }
@@ -133,12 +145,12 @@ function compartimentos(ctx, tl) {
   tl.to(E.cam.userData.porta.material, { opacity: 0.12, duration: 0.6 }, 0.6);
   E.gems.forEach((g, k) => {
     const destino = E.cam.localToWorld(E.cam.userData.compartimentos[k].clone());
-    const inicio = destino.clone().add(new THREE.Vector3(0, 2.6, 0.6));
+    const inicio = E.pOnt.clone(); // as GEM saem da ONT 7 e vão para os compartimentos
     const t = 1.2 + k * 0.6;
     tl.set(g, { visible: true }, t);
-    tl.fromTo(g.position, { x: inicio.x, y: inicio.y, z: inicio.z }, { x: destino.x, y: destino.y, z: destino.z, duration: 1.0, ease: 'bounce.out', immediateRender: false }, t);
+    tl.fromTo(g.position, { x: inicio.x, y: inicio.y, z: inicio.z }, { x: destino.x, y: destino.y, z: destino.z, duration: 1.4, ease: 'power2.inOut', immediateRender: false }, t);
   });
-  mostrarRotulo(tl, ligacao(ctx, 'GEM ports', 'compartimentos do camião', pos.clone().add(new THREE.Vector3(0.2, 2.6, 0.8))), 3.4);
+  mostrarRotulo(tl, ligacao(ctx, 'GEM ports', 'compartimentos do camião', pos.clone().add(new THREE.Vector3(0.2, 2.2, 0.8))), 3.4);
 }
 
 // 4) Perfil de linha → manual de carga, igual para todos os camiões do mesmo tipo

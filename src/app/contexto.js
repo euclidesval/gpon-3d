@@ -8,6 +8,14 @@ export function criarContexto({ mundo, camera, controlos = null, motor = null, u
   const atualizadores = new Set();
   const destaqueAtual = { ids: [] };
 
+  // Em ecrãs mais estreitos do que 16:9 (tablet, telemóvel ao alto) a câmara recua para caber o mesmo.
+  const ajustar = (pos, alvo) => {
+    const aspecto = camera.aspect || 16 / 9;
+    const f = Math.min(2.2, Math.max(1, 1.6 / aspecto));
+    if (f === 1) return pos;
+    return [0, 1, 2].map((i) => alvo[i] + (pos[i] - alvo[i]) * f);
+  };
+
   const ctx = {
     rede: mundo.rede,
     temp: mundo.temporario,
@@ -50,8 +58,11 @@ export function criarContexto({ mundo, camera, controlos = null, motor = null, u
 
     camaraPara(posicao, alvo, duracao = 1.6, ease = 'power2.inOut') {
       const tl = gsap.timeline();
-      const p = Array.isArray(posicao) ? { x: posicao[0], y: posicao[1], z: posicao[2] } : posicao;
-      const a = Array.isArray(alvo) ? { x: alvo[0], y: alvo[1], z: alvo[2] } : alvo;
+      const pa = Array.isArray(posicao) ? posicao : [posicao.x, posicao.y, posicao.z];
+      const aa = Array.isArray(alvo) ? alvo : [alvo.x, alvo.y, alvo.z];
+      const pp = ajustar(pa, aa);
+      const p = { x: pp[0], y: pp[1], z: pp[2] };
+      const a = { x: aa[0], y: aa[1], z: aa[2] };
       if (duracao <= 0) {
         camera.position.set(p.x, p.y, p.z);
         controlos?.target.set(a.x, a.y, a.z);
@@ -65,7 +76,8 @@ export function criarContexto({ mundo, camera, controlos = null, motor = null, u
     // Mesma coisa, mas para usar dentro da timeline de uma cena.
     tweenCamara(posicao, alvo, duracao = 1.6, ease = 'power2.inOut') {
       const tl = gsap.timeline();
-      tl.to(camera.position, { x: posicao[0], y: posicao[1], z: posicao[2], duration: duracao, ease }, 0);
+      const p = ajustar(posicao, alvo);
+      tl.to(camera.position, { x: p[0], y: p[1], z: p[2], duration: duracao, ease }, 0);
       if (controlos) tl.to(controlos.target, { x: alvo[0], y: alvo[1], z: alvo[2], duration: duracao, ease }, 0);
       return tl;
     },
