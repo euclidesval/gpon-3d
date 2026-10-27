@@ -51,8 +51,8 @@ export default {
         faixa.add(tr);
       }
     }
-    const rFaixa = ctx.rotulo('<b>dba-profile 10 · tipo 3</b><span>▮ 10 Mbit/s garantidos · ┅ até 100 Mbit/s</span>', new THREE.Vector3(1.4, 0.05, 0), { pai: faixa, visivel: true });
-    rFaixa.center.set(0, 0.5);
+    const rFaixa = ctx.rotulo('<b>dba-profile 10 · tipo 3</b><span>▮ 10 Mbit/s garantidos · ┅ até 100 Mbit/s</span>', new THREE.Vector3(-1.3, 0.05, 0.45), { pai: faixa, visivel: true });
+    rFaixa.center.set(0, 1);
     faixa.visible = false;
 
     const tcont = criarTcont(ctx, { numero: 1, largura: 1.5, altura: 1.05, profundidade: 0.7, pai: amp });
