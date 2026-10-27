@@ -1,0 +1,24 @@
+{
+  "name": "gpon-3d",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Apresentação 3D interactiva: OMCI, T-CONT, GEM ports e Perfil de linha (GPON)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "capturas": "node scripts/capturas.mjs"
+  },
+  "dependencies": {
+    "gsap": "3.15.0",
+    "postprocessing": "6.39.5",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "jsdom": "29.1.1",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}
