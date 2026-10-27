@@ -26,6 +26,8 @@ export default {
         ctx.destacar([]);
       }, null, 0.6 + C.resumo.length * 1.2);
     } else {
+      // A tabela do passo anterior sai: o teste fica sozinho no ecrã
+      ctx.ui?.limparCena?.();
       const el = ctx.sobreposicao('<h2>Teste rápido</h2><div class="quiz"></div>', 'cartao-resumo cartao-quiz interactiva');
       if (el) montarQuiz(el.querySelector('.quiz'), C.quiz, C.siglas);
       tl.call(ctx.destacarEm([]), null, 0.2);

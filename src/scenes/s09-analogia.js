@@ -13,6 +13,7 @@ let E = null;
 
 function ligacao(ctx, tecnico, analogia, pos) {
   const r = ctx.rotulo(`<b>${tecnico}</b><span class="seta-analogia">⟷</span><b>${analogia}</b>`, pos, { classe: 'rotulo rotulo-analogia' });
+  E.ligacoes.push(r);
   return r;
 }
 
@@ -64,10 +65,12 @@ export default {
       g.visible = false;
       return g;
     });
-    E = { camioes, torre, semaforo, omci, tcont, gems, cam: camioes[K] };
+    E = { camioes, torre, semaforo, omci, tcont, gems, cam: camioes[K], ligacoes: [] };
   },
   passo(ctx, i) {
     const tl = gsap.timeline({ paused: true });
+    // Só a ligação do passo actual fica visível (as anteriores estão nas notas)
+    E.ligacoes.forEach((r) => tl.set(r, { visible: false }, 0));
     [radio, autorizacao, compartimentos, manual][i](ctx, tl);
     tl.to({}, { duration: 1.0 });
     return tl;
@@ -140,8 +143,7 @@ function compartimentos(ctx, tl) {
 
 // 4) Perfil de linha → manual de carga, igual para todos os camiões do mesmo tipo
 function manual(ctx, tl) {
-  const cam = ctx.dados.camara;
-  tl.add(ctx.tweenCamara([16, 13, 30], [17, 1, 3], 1.6), 0);
+  tl.add(ctx.tweenCamara([19, 14, 33], [19.5, 1, 3], 1.6), 0);
   tl.call(ctx.destacarEm(['olt']), null, 0.3);
   E.camioes.forEach((c, k) => {
     if (k !== K) aparecer(tl, c, 0.8 + k * 0.2);
@@ -149,6 +151,5 @@ function manual(ctx, tl) {
     tl.set(livro, { visible: true }, 2.2 + k * 0.25);
     tl.fromTo(livro.element, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, 2.2 + k * 0.25);
   });
-  mostrarRotulo(tl, ligacao(ctx, 'Perfil de linha', 'manual de carga', new THREE.Vector3(17, 5.2, 6.4)), 3.4);
-  tl.add(ctx.tweenCamara(cam.posicao, cam.alvo, 1.6), 4.6);
+  mostrarRotulo(tl, ligacao(ctx, 'Perfil de linha', 'manual de carga', new THREE.Vector3(20, 6.2, 6.4)), 3.4);
 }

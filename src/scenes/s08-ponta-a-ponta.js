@@ -13,7 +13,7 @@ import { escapar } from '../ui/texto.js';
 const K = 3;
 const CAM = {
   casa: [[31.4, 3.0, 5.6], [31.4, 1.3, -1.2]],
-  modelo: [[33.6, 2.6, 6.8], [32.6, 0.9, 1.2]],
+  modelo: [[34.8, 4.4, 11.5], [32.0, 1.0, 0.6]],
   olt: [[-14.4, 3.8, 6.4], [-17.6, 2.2, -1.2]],
   saida: [[-13.5, 7.5, 14], [-23, 2.6, -1]],
 };
@@ -149,7 +149,7 @@ function esperaJanela(ctx, tl) {
   tl.add(ctx.tweenCamara(...CAM.modelo, 1.4), 1.4);
   mover(tl, pac, E.pOnt, E.pGem().add(new THREE.Vector3(0, 0.05, 0.35)), 1.8, 1.4);
   tl.to(E.gem.material, { emissiveIntensity: 1.4, duration: 0.25, yoyo: true, repeat: 3 }, 3.2);
-  const relogio = ctx.rotulo('<div class="cartao-info" style="border-color:#f97316"><b>⏱ GEM 2 à espera da janela do T-CONT 1</b><span class="conta">3</span></div>', E.tcont.position.clone().add(new THREE.Vector3(-1.9, 1.0, 0)), {});
+  const relogio = ctx.rotulo('<div class="cartao-info" style="border-color:#f97316"><b>⏱ GEM 2 à espera da janela do T-CONT 1</b><span class="conta">3</span></div>', E.tcont.position.clone().add(new THREE.Vector3(2.4, 0.6, 0)), {});
   tl.set(relogio, { visible: true }, 3.2);
   for (let s = 2; s >= 0; s--) tl.call(() => (relogio.element.querySelector('.conta').textContent = s ? String(s) : 'Janela aberta ✓'), null, 3.2 + (3 - s) * 0.8);
   E.relogio = relogio;
