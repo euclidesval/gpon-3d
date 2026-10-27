@@ -164,6 +164,8 @@ export function ligarTeclado(app, alvo = window) {
   const tratar = (ev) => {
     if (ev.target?.closest?.('input, textarea, select, [contenteditable]')) return;
     if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    // Espaço/Enter num botão (ex.: teste rápido) carrega no botão, não pausa a animação
+    if ((ev.key === ' ' || ev.key === 'Enter') && ev.target?.closest?.('button')) return;
     switch (ev.key) {
       case 'ArrowRight':
       case 'PageDown':
