@@ -11,7 +11,7 @@ import { escapar } from '../ui/texto.js';
 // 3) DBA em acção (uma fila cresce, a janela dessa ONT alarga e a de outra encurta);
 // 4) sub-vista «Tipos de T-CONT» (5 faixas de autoestrada: mínimo sólido, máximo tracejado).
 const IGUAIS = [1, 1, 1, 1];
-const DEPOIS_DBA = [0.8, 2.0, 0.4, 0.8]; // ONT 3 (ocupada) ganha, ONT 5 (quieta) perde
+const DEPOIS_DBA = [1, 1.6, 0.4, 1]; // só a ONT 3 (ocupada) ganha e só a ONT 5 (quieta) perde
 const X0 = -14.2;
 const COMPRIMENTO = 10.8;
 
@@ -74,7 +74,7 @@ function dispor(larg) {
 
 function tabelaMapa(ctx, larg) {
   const linhas = ctx.rede.numerosONT
-    .map((n, k) => `<tr><td>T-CONT da ONT ${n}</td><td><span class="barra-mapa" style="width:${(larg[k] * 2.2).toFixed(2)}rem"></span></td></tr>`)
+    .map((n, k) => `<tr><td>Alloc-ID · ONT ${n}</td><td><span class="barra-mapa" style="width:${(larg[k] * 2.2).toFixed(2)}rem"></span></td></tr>`)
     .join('');
   return `<div class="cartao-info mapa-banda"><b>🗺 Mapa de banda</b><table>${linhas}</table></div>`;
 }
@@ -155,7 +155,7 @@ function criarFila(ctx) {
     g.add(c);
     cubos.push(c);
   }
-  const r = ctx.rotulo('<b>Fila a crescer</b><span>muito tráfego</span>', new THREE.Vector3(-0.3, 1.8, 0), { pai: g, visivel: false });
+  const r = ctx.rotulo('<b>Fila a crescer</b><span>muito tráfego</span>', new THREE.Vector3(-0.3, 2.6, 0), { pai: g, visivel: false });
   E.fila = { g, cubos, r, n: 0 };
   return E.fila;
 }
@@ -178,7 +178,7 @@ function dba(ctx) {
   tl.call(ctx.destacarEm(['ont']), null, 0.2);
   tl.set(fila.r, { visible: true }, 0.3);
   fila.cubos.forEach((c, i) => tl.set(c, { visible: true }, 0.4 + i * 0.35));
-  const quieta = ctx.rotulo('<b>💤 quieta</b><span>pouco tráfego</span>', E.tconts[2].position.clone().add(new THREE.Vector3(-1.2, 1.4, 0)), {});
+  const quieta = ctx.rotulo('<b>💤 quieta</b><span>pouco tráfego</span>', E.tconts[2].position.clone().add(new THREE.Vector3(-1.0, 2.3, 0)), {});
   tl.set(quieta, { visible: true }, 1.0);
   // DBA na OLT
   const dbaObj = rede.olt.userData.dba;
@@ -200,9 +200,11 @@ function dba(ctx) {
     },
     t1,
   );
-  tl.add(marca(ctx, '⬌ mais', 'sim', new THREE.Vector3(X0 + 4.8, 3.6, 3.6), { duracao: 1.8 }), t1 + 1.0);
   // O ciclo calcula os tempos das janelas a partir da disposição: usar a disposição nova
   dispor(DEPOIS_DBA);
+  const centro = (k) => new THREE.Vector3(E.janelas[k].position.x, 3.4, 3.6);
+  tl.add(marca(ctx, '＋ ONT 3', 'sim', centro(1), { duracao: 2.4 }), t1 + 1.0);
+  tl.add(marca(ctx, '－ ONT 5', 'nao', centro(2).add(new THREE.Vector3(0.6, 0, 0)), { duracao: 2.4 }), t1 + 1.0);
   const fim = ciclo(ctx, tl, t1 + 1.4, 6.0, [1, 3, 1, 1]);
   dispor(IGUAIS);
   tl.call(() => dispor(DEPOIS_DBA), null, t1 + 1.1);
@@ -259,11 +261,16 @@ function tipos(ctx) {
     tl.from(faixa.scale, { x: 0.01, z: 0.01, duration: 0.5, ease: 'power2.out' }, t0);
   });
   const legenda = ctx.rotulo(
-    '<b><span style="color:#f97316">▮</span> sólido = mínimo garantido &nbsp; <span style="color:#f97316">┅</span> tracejado = máximo possível</b>',
+    '<b style="white-space:nowrap"><i class="amostra" style="--cor:#f97316;width:1.2em"></i> sólido = mínimo garantido &nbsp;·&nbsp; <i class="amostra amostra-contentor" style="--cor:#f97316;border-style:dashed;width:1.2em"></i> tracejado = máximo possível</b>',
     new THREE.Vector3(0, 0.2, comp / 2 + 0.6),
     { pai: g, visivel: false },
   );
-  tl.add(ctx.tweenCamara([4, 12.5, 19.5], [4, 0, 8.2], 1.6), 0);
+  // Sub-vista limpa: esconde o resto da cena
+  tl.call(() => {
+    ctx.temp.children.forEach((c) => c !== g && (c.visible = false));
+    ctx.rede.rotulos.casas.forEach((r) => (r.visible = false));
+  }, null, 0);
+  tl.add(ctx.tweenCamara([4, 18, 23], [4, 0, 8.4], 1.6), 0);
   tl.call(ctx.destacarEm(['dba']), null, 0.2);
   tl.set(legenda, { visible: true }, 4.0);
   tl.to({}, { duration: 1.2 });

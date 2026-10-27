@@ -79,7 +79,7 @@ function vlanParaGem(ctx) {
   // ONT → compartimento da GEM 2 (vista ampliada)
   tl.add(mover(pac, E.pOnt, E.pGem[0].clone().add(new THREE.Vector3(0, 0.05, 0.25)), 1.2), 4.5);
   tl.to(E.interior.gems[0].material, { emissiveIntensity: 1.4, duration: 0.25, yoyo: true, repeat: 3 }, 5.7);
-  tl.add(marca(ctx, 'VLAN 100 → GEM 2', 'sim', E.pGem[0].clone().add(new THREE.Vector3(-1.6, -0.2, 0.4)), { duracao: 2.4 }), 5.7);
+  tl.add(marca(ctx, 'VLAN 100 → GEM 2', 'sim', E.pGem[0].clone().add(new THREE.Vector3(0.9, 1.45, 0.4)), { duracao: 2.4 }), 5.7);
   tl.to({}, { duration: 1.0 });
   E.pacote = pac;
   return tl;
@@ -93,6 +93,7 @@ function sairPeloTcont(ctx) {
   // O contentor do T-CONT 1 acende: a GEM 2 está lá dentro
   tl.to(tc.userData.faces.material, { opacity: 0.55, duration: 0.3, yoyo: true, repeat: 3 }, 0.3);
   const espera = ctx.rotulo('<div class="cartao-info" style="border-color:#f97316"><b>⏱ À espera da janela do T-CONT 1</b><span class="conta">3</span></div>', E.pTcont.clone().add(new THREE.Vector3(1.5, 0.75, 0.3)), {});
+  E.espera = espera;
   tl.set(espera, { visible: true }, 0.6);
   for (let s = 2; s >= 0; s--) tl.call(() => (espera.element.querySelector('.conta').textContent = s ? String(s) : 'Janela aberta ✓'), null, 0.6 + (3 - s) * 0.7);
   // Sai pelo topo do contentor, volta à ONT e entra na fibra como luz âmbar (a subir)
@@ -112,13 +113,16 @@ function sairPeloTcont(ctx) {
 
 function descer(ctx) {
   const tl = gsap.timeline({ paused: true });
+  // A descer não há T-CONT: esconder o que veio do passo anterior
+  if (E.espera) tl.set(E.espera, { visible: false }, 0);
+  if (E.pacote) tl.set(E.pacote, { visible: false }, 0);
   const cam = ctx.dados.camara;
   tl.add(ctx.tweenCamara(cam.posicao, cam.alvo, 1.0), 0);
   tl.call(ctx.destacarEm(['ont']), null, 0.2);
   const curva = ctx.rede.curvas.derivacoes[K];
   // Tramas que chegam pela fibra, cada uma com o identificador da sua GEM
   const tramas = [
-    { gem: 0, texto: 'GEM 2' },
+    { gem: 0, texto: 'GEM · Internet' },
     { gem: 1, texto: 'GEM · Voz' },
     { gem: null, texto: 'GEM de outra ONT' },
     { gem: 2, texto: 'GEM · IPTV' },

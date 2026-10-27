@@ -17,7 +17,9 @@
     "LOS": "Loss of Signal: perda de sinal óptico.",
     "LAN": "Local Area Network: a rede dentro de casa (portas Ethernet da ONT e do router).",
     "ITU-T": "Sector de normalização das telecomunicações da União Internacional de Telecomunicações.",
-    "IPTV": "Televisão sobre IP: canais de TV entregues pela rede de dados."
+    "IPTV": "Televisão sobre IP: canais de TV entregues pela rede de dados.",
+    "dying gasp": "«Último suspiro»: aviso que a ONT envia à OLT quando perde a energia.",
+    "Mbit/s": "Megabits por segundo: medida da velocidade (quantidade de dados por segundo)."
   },
   "actores": [
     {
@@ -268,17 +270,20 @@
         {
           "id": "monitorizar",
           "rotulo": "2. Monitorizar",
-          "actor": "ont"
+          "actor": "ont",
+          "legenda": "A ONT envia relatórios à OLT pelo OMCI: potência óptica, contadores e erros."
         },
         {
           "id": "alarmes",
           "rotulo": "3. Alarmes",
-          "actor": "ont"
+          "actor": "ont",
+          "legenda": "Sem energia, a ONT ainda envia um último aviso à OLT: o dying gasp."
         },
         {
           "id": "actualizar",
           "rotulo": "4. Actualizar software",
-          "actor": "omci"
+          "actor": "omci",
+          "legenda": "O software novo também chega à ONT pelo OMCI."
         }
       ],
       "avisos": []
@@ -331,14 +336,14 @@
           "id": "tipos",
           "rotulo": "4. Tipos de T-CONT",
           "actor": "dba",
-          "legenda": "Há 5 tipos de T-CONT: do mais garantido (tipo 1, fixo) ao melhor esforço (tipo 4)."
+          "legenda": "Há 5 tipos de T-CONT: do fixo (tipo 1) ao melhor esforço (tipo 4); o tipo 5 é uma combinação."
         }
       ],
       "tiposTcont": [
         {
           "tipo": 1,
           "nome": "Fixa",
-          "exemplo": "voz",
+          "exemplo": "voz · sempre reservada",
           "minimo": 1.0,
           "maximo": 1.0
         },
@@ -366,7 +371,7 @@
         {
           "tipo": 5,
           "nome": "Combinação",
-          "exemplo": "vários",
+          "exemplo": "combinação",
           "minimo": 0.45,
           "maximo": 1.0
         }
@@ -417,7 +422,8 @@
         {
           "id": "down",
           "rotulo": "3. A descer",
-          "actor": "ont"
+          "actor": "ont",
+          "sentido": "down"
         }
       ],
       "avisos": []
@@ -466,7 +472,7 @@
         },
         {
           "linha": " gem mapping 2 0 vlan 100",
-          "peca": "Etiqueta VLAN 100 ligada à GEM 2"
+          "peca": "Etiqueta VLAN 100 ligada à GEM 2 (0 = índice do mapeamento)"
         },
         {
           "linha": " commit",

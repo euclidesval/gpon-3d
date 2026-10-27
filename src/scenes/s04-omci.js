@@ -25,13 +25,13 @@ export default {
     // Canal tracejado (fluxo) por cima do núcleo da fibra, com brilho
     const canal = tuboLinha(curvaAteONT(rede, K, { desvioY: 0.1 }), CORES.omci, { raio: 0.07, tracejado: true, traco: 0.5, espaco: 0.25, emissivo: 2.2 });
     ctx.adicionar(canal, { brilho: true });
-    const rCanal = ctx.rotulo('<b>Canal OMCI</b><span>dentro da fibra</span>', curva.getPointAt(0.35).add(new THREE.Vector3(0, 0.9, 0)), { visivel: true });
+    const rCanal = ctx.rotulo('<b>Canal OMCI</b><span>dentro da fibra · GEM reservada</span>', curva.getPointAt(0.35).add(new THREE.Vector3(0, 0.9, 0)), { visivel: true });
 
     const tecnico = criarTecnico();
     tecnico.position.set(-16.3, 0.2, 0.7);
     tecnico.rotation.y = -2.5;
     ctx.adicionar(tecnico);
-    const rTec = ctx.rotulo('<b>Técnico</b><span>configura na OLT</span>', new THREE.Vector3(-15.2, 2.3, 1.2), { visivel: true });
+    const rTec = ctx.rotulo('<b>Técnico</b><span>configura na OLT</span>', new THREE.Vector3(-16.3, 2.25, 0.7), { visivel: true });
 
     const ont = rede.onts[K];
     const casa = rede.casas[K];
@@ -47,6 +47,8 @@ export default {
 
 function esconderCartoes(tl) {
   E.cartoes.forEach((c) => tl.set(c, { visible: false }, 0));
+  // A ampliação só faz sentido junto à ONT (passo 1)
+  tl.set([E.amp, E.amp.userData.linhas], { visible: false }, 0);
 }
 
 function configurar(ctx) {
@@ -82,7 +84,7 @@ function monitorizar(ctx) {
   tl.set(pac, { visible: false }, 5.4);
   const cartao = ctx.rotulo(
     `<div class="cartao-info"><b>ONT 7 · monitorização</b>${grafico}<small>potência óptica · contadores · erros</small></div>`,
-    ctx.rede.olt.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0.6, 3.1, 0.6)),
+    ctx.rede.olt.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0.6, 3.7, 0.6)),
     { classe: '' },
   );
   E.cartoes.push(cartao);
@@ -123,11 +125,11 @@ function alarmes(ctx) {
   tl.call(ctx.destacarEm(['omci']), null, 2.4);
   tl.set(pac, { visible: false }, 5.8);
   tl.add(ctx.tweenCamara(...CAM.olt, 1.2), 5.0);
-  const alarme = ctx.rotulo('<div class="cartao-info alarme"><b>⚠ Alarme · ONT 7</b>dying gasp (perda de energia)</div>', ctx.rede.olt.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0.6, 3.1, 0.6)), { classe: '' });
+  const alarme = ctx.rotulo('<div class="cartao-info alarme"><b>⚠ Alarme · ONT 7</b>dying gasp (perda de energia)</div>', ctx.rede.olt.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0.6, 3.7, 0.6)), { classe: '' });
   E.cartoes.push(alarme);
   tl.call(ctx.destacarEm(['olt']), null, 5.8);
   tl.set(alarme, { visible: true }, 5.8);
-  tl.fromTo(alarme.element, { opacity: 0 }, { opacity: 1, duration: 0.2, repeat: 3, yoyo: true }, 5.8);
+  tl.fromTo(alarme.element, { opacity: 0 }, { opacity: 1, duration: 0.2, repeat: 4, yoyo: true }, 5.8);
   tl.set(alarme.element, { opacity: 1 }, 6.8);
   tl.to({}, { duration: 1.0 });
   return tl;

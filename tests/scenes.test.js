@@ -67,3 +67,21 @@ describe('limpeza', () => {
     expect(camada.children.length).toBe(0);
   });
 });
+
+describe('pacotes', () => {
+  // Regressão: os pacotes só se vêem durante a viagem (nada fica «preso» no fim de um passo).
+  it.each([
+    [2, 0],
+    [3, 0],
+    [3, 1],
+    [4, 1],
+    [5, 2],
+  ])('cena %i, passo %i: nenhum impulso visível no fim', (cena, passo) => {
+    const { app, mundo } = montarApp();
+    app.irPara(cena, passo);
+    app.timeline.progress(1, false);
+    const visiveis = mundo.temporario.children.filter((o) => o.name === 'impulso' && o.visible);
+    expect(visiveis).toHaveLength(0);
+    gsap.globalTimeline.clear();
+  });
+});

@@ -24,7 +24,9 @@ export function colocarNaCurva(obj, curva, u) {
 }
 
 // Tween que faz o objecto percorrer a curva de `de` até `ate` (0..1).
-export function viajar(obj, curva, { de = 0, ate = 1, duracao = 1.5, ease = 'none', alinhar = true, ...resto } = {}) {
+// O objecto só está visível durante a viagem (a não ser que `ficar` seja true):
+// assim o estado é sempre coerente, mesmo quando se salta para um ponto qualquer da timeline.
+export function viajar(obj, curva, { de = 0, ate = 1, duracao = 1.5, ease = 'none', alinhar = true, ficar = false, ...resto } = {}) {
   const estado = { u: de };
   return gsap.fromTo(
     estado,
@@ -33,16 +35,14 @@ export function viajar(obj, curva, { de = 0, ate = 1, duracao = 1.5, ease = 'non
       u: ate,
       duration: duracao,
       ease,
+      immediateRender: false,
       ...resto,
       onUpdate() {
+        const p = this.progress();
+        obj.visible = ficar ? p > 0 : p > 0 && p < 1;
         if (alinhar) colocarNaCurva(obj, curva, estado.u);
         else curva.getPointAt(THREE.MathUtils.clamp(estado.u, 0, 1), obj.position);
         resto.onUpdate?.call(this);
-      },
-      onStart() {
-        obj.visible = true;
-        if (alinhar) colocarNaCurva(obj, curva, de);
-        resto.onStart?.call(this);
       },
     },
   );
@@ -80,10 +80,9 @@ export function explodir(pts, { raio = 1.2, duracao = 0.9 } = {}) {
       k: 1,
       duration: duracao,
       ease: 'power2.out',
-      onStart() {
-        pts.visible = true;
-      },
+      immediateRender: false,
       onUpdate() {
+        pts.visible = estado.k > 0 && estado.k < 1;
         for (let i = 0; i < n; i++) {
           pos.array[i * 3] = dir[i * 3] * raio * estado.k;
           pos.array[i * 3 + 1] = dir[i * 3 + 1] * raio * estado.k - 0.6 * estado.k * estado.k;
@@ -91,9 +90,6 @@ export function explodir(pts, { raio = 1.2, duracao = 0.9 } = {}) {
         }
         pos.needsUpdate = true;
         pts.material.opacity = 1 - estado.k;
-      },
-      onComplete() {
-        pts.visible = false;
       },
     },
   );

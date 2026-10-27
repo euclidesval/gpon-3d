@@ -29,7 +29,7 @@ export default {
       largura: 3.0,
       altura: 2.0,
       profundidade: 1.2,
-      titulo: 'Perfil de linha 100 → ONT 7',
+      titulo: 'Perfil de linha 100 (modelo na OLT)',
     });
 
     // Faixa do dba-profile 10: 10 Mbit/s garantidos (sólido), até 100 Mbit/s (tracejado)
@@ -43,15 +43,16 @@ export default {
     solido.position.set(-1.3 + 0.13, 0.01, 0);
     faixa.add(piso, solido);
     const matTraco = new THREE.MeshStandardMaterial({ color: CORES.tcont, emissive: CORES.tcont, emissiveIntensity: 0.6 });
-    for (let k = 0; k < 12; k++) {
-      for (const z of [-0.45, 0.45]) {
-        const tr = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.03, 0.04), matTraco);
-        tr.position.set(-1.3 + (2.6 / 12) * (k + 0.5), 0.02, z);
+    // Bermas tracejadas = largura máxima (100 Mbit/s), paralelas à parte sólida (10 Mbit/s)
+    for (let k = 0; k < 4; k++) {
+      for (const x of [-1.3, 1.3]) {
+        const tr = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, 0.13), matTraco);
+        tr.position.set(x, 0.02, -0.45 + (0.9 / 4) * (k + 0.5));
         faixa.add(tr);
       }
     }
-    const rFaixa = ctx.rotulo('<b>dba-profile 10 · tipo 3</b><span>▮ 10 Mbit/s garantidos · ┅ até 100 Mbit/s</span>', new THREE.Vector3(-1.4, 0.05, 0), { pai: faixa, visivel: true });
-    rFaixa.center.set(1, 0.5);
+    const rFaixa = ctx.rotulo('<b>dba-profile 10 · tipo 3</b><span>▮ 10 Mbit/s garantidos · ┅ até 100 Mbit/s</span>', new THREE.Vector3(1.4, 0.05, 0), { pai: faixa, visivel: true });
+    rFaixa.center.set(0, 0.5);
     faixa.visible = false;
 
     const tcont = criarTcont(ctx, { numero: 1, largura: 1.5, altura: 1.05, profundidade: 0.7, pai: amp });
@@ -70,8 +71,8 @@ export default {
     const seta = new THREE.Group();
     const origem = new THREE.Vector3(-0.85, 0.2, 0.25);
     const destino = new THREE.Vector3(-0.15, -0.35, 0.25);
-    seta.add(tuboLinha(new THREE.LineCurve3(origem, destino), '#ffffff', { raio: 0.035, emissivo: 0.8 }));
-    const ponta = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.22, 16), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
+    seta.add(tuboLinha(new THREE.LineCurve3(origem, destino), '#ffffff', { raio: 0.05, emissivo: 0.8 }));
+    const ponta = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.3, 16), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
     ponta.position.copy(destino);
     ponta.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), destino.clone().sub(origem).normalize());
     seta.add(ponta);
@@ -102,7 +103,7 @@ export default {
         break;
       case 1: // ont-lineprofile 100: o «livro» (moldura) acende
         tl.call(ctx.destacarEm(['olt']), null, 0.1);
-        tl.fromTo(E.amp.userData.rotulo.element, { opacity: 0.3 }, { opacity: 1, duration: 0.3, repeat: 3, yoyo: true }, 0.2);
+        tl.fromTo(E.amp.userData.rotulo.element, { opacity: 0.3 }, { opacity: 1, duration: 0.3, repeat: 4, yoyo: true }, 0.2);
         tl.to(E.amp.scale, { x: 1.06, y: 1.06, z: 1.06, duration: 0.25, yoyo: true, repeat: 1 }, 0.2);
         break;
       case 2: // tcont 1 dba-profile-id 10
@@ -133,7 +134,10 @@ export default {
 function reutilizar(ctx, tl) {
   const { rede } = ctx;
   const C = rede.curvas;
-  tl.add(ctx.tweenCamara([10, 17, 36], [8, 1.5, -1], 1.6), 0);
+  // Recolhe o painel de código e a ampliação: agora interessa ver as várias ONT
+  tl.set([E.amp, E.amp.userData.linhas], { visible: false }, 0);
+  if (E.painel) tl.to(E.painel, { opacity: 0, duration: 0.4 }, 0);
+  tl.add(ctx.tweenCamara([8, 22, 44], [8, 1, -1], 1.6), 0);
   tl.call(ctx.destacarEm(['omci']), null, 0.4);
   const pac = criarPacote(ctx, CORES.omci, '📘 perfil 100', { classe: 'rotulo-pacote omci' });
   tl.add(viajar(pac, C.alimentacao, { de: 0, ate: 1, duracao: 2.2 }), 1.2);
@@ -143,7 +147,7 @@ function reutilizar(ctx, tl) {
     tl.add(viajar(copia, curva, { de: 0, ate: 1, duracao: 1.4 }), 3.4);
     tl.set(copia, { visible: false }, 4.8);
     const casa = rede.casas[k];
-    const selo = ctx.rotulo('<b>📘 perfil 100</b><span>aplicado</span>', casa.position.clone().add(new THREE.Vector3(1.4, 5.6, -1)), {});
+    const selo = ctx.rotulo('<b>📘 perfil 100</b><span>aplicado</span>', casa.position.clone().add(new THREE.Vector3(1.6, 1.2, 2.6)), {});
     selo.element.style.borderColor = '#a855f7';
     tl.set(selo, { visible: true }, 4.8 + k * 0.1);
     tl.fromTo(selo.element, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 4.8 + k * 0.1);

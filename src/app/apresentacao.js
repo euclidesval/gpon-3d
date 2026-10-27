@@ -64,6 +64,8 @@ export class Apresentacao {
     this.timeline = null;
     this.passoAtual = p;
     this.terminou = false;
+    const sentidoDoPasso = this.dados?.passos?.[p]?.sentido;
+    if (sentidoDoPasso) this.sentido = sentidoDoPasso;
     const ctx = this.ctx;
     ctx.dados = this.dados;
     ctx.sentido = this.sentido;
