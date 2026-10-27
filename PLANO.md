@@ -13,10 +13,10 @@
 | 2. Esqueleto (Vite, cena base, UI, navegação, Pages) | ✅ feito |
 | 3. Modelos procedurais (OLT, fibra, splitter, ONT, casas, router, dispositivos) | ✅ feito |
 | 4. Cenas 0–3 → **paragem de validação** | ✅ feito — validado (PR #1) |
-| 5. Cenas 4–7 | ✅ feito — revisto pelos dois revisores — **a aguardar validação do utilizador** |
-| 6. Cenas 8–10 | ⏳ por fazer |
-| 7. Polimento (desempenho, responsividade, acessibilidade) | ⏳ por fazer |
-| 8. Verificação final + `npm run build` + capturas | ⏳ por fazer |
+| 5. Cenas 4–7 | ✅ feito — revisto e validado |
+| 6. Cenas 8–10 | ✅ feito — revisto pelos dois revisores |
+| 7. Polimento (desempenho, responsividade, acessibilidade) | ✅ feito |
+| 8. Verificação final + `npm run build` + capturas | ✅ feito — **a aguardar validação final do utilizador** |
 
 ---
 
@@ -222,10 +222,9 @@ Em cada paragem: commit + push para `claude/zen-noether-3wwknm`, link do Pages e
 - Ajudas em `src/scenes/util.js`: `criarPacote`, `percorrer`, `rebentar`, `marca`, `clarao`, `piscarLed`, `abanar`.
 - Curvas da fibra: `rede.curvas.alimentacao` (OLT→splitter, u=0 na OLT) e `rede.curvas.derivacoes[k]` (splitter→ONT k, u=0 no splitter).
 - Casas visíveis: ONT 1, 3, 5, 7 (saídas 1, 3, 5, 7 do splitter; as outras 4 com tampa). `rede.onts[k]`, `rede.routers[k]`.
-- Cenas 8–10 estão como `cenaPorFazer` em `src/scenes/index.js` (mostram a rede e o actor activo).
 - Depuração/capturas: `#cena=N&passo=P&t=0.5` (progresso fixo), `&cam=x,y,z,ax,ay,az` (câmara), `?captura=1`.
 - Playwright: `scripts/capturas.mjs` copia o canvas para uma `<img>` antes de capturar (o headless nem sempre apresenta o último frame WebGL).
-- `dist/` está no `.gitignore` durante o desenvolvimento; na entrega final é gerado e incluído.
+- `dist/` está no repositório (versão pronta a apresentar). Depois de mudar código: `npm run build` e fazer commit da `dist/`.
 
 ## Revisão das cenas 0–3 (subagentes)
 - Revisor técnico e revisor didáctico correram sobre as cenas 0–3; correcções aplicadas (ver commit «revisão das cenas 0–3»).
@@ -240,7 +239,27 @@ Em cada paragem: commit + push para `claude/zen-noether-3wwknm`, link do Pages e
 - Tone mapping NEUTRAL (o ACES desvirtuava o azul das GEM para lilás).
 - Um passo pode impor o sentido (`passos[i].sentido` no JSON).
 
+## Critérios de aceitação (secção 9)
+
+| Critério | Estado |
+|---|---|
+| 11 cenas sem erros na consola | ✅ testes (jsdom, cada passo de cada cena) + capturas Playwright sem erros |
+| Animação, legenda ≤ 2 linhas, analogia, nota, actor activo | ✅ (teste de conteúdo verifica comprimentos e campos) |
+| Cores da secção 2 em todas as cenas | ✅ `colors.js` única fonte; teste compara com o CSS; tone mapping neutro |
+| Downstream/upstream distinguíveis | ✅ ciano/âmbar, sentido do movimento, rótulos e alternador |
+| Colisão (3) e DBA (5) sem ler | ✅ clarão + ⚠ + simulação; fila a crescer, janelas + / − |
+| Código ↔ peças 3D (7) | ✅ uma linha por passo |
+| Valores ilustrativos assinalados | ✅ cenas 7 e 8 (teste) |
+| 60 fps / 16:9 | ⚠ verificado por construção (qualidade adaptativa); medir no portátil com `?fps` — no ambiente cloud só há GPU por software |
+| Build sem internet | ✅ `dist/` com caminhos relativos e sem pedidos externos |
+| README | ✅ |
+
+## Ideias para depois (não pedidas)
+- Tabela final com linhas para T-CONT e Perfil de linha (o guião só tem 5 actores).
+- Na analogia, o perfil a sair de um «livro» na OLT antes de ir para os camiões.
+
 ## Registo de sessões
 - **2026-10-27** — Plano criado. Versões verificadas no npm: three 0.186.1, gsap 3.15.0, postprocessing 6.39.5, vite 8.3.5, vitest 5.0.5. Node 22.
 - **2026-10-27** — Passos 2–4: esqueleto, modelos procedurais, cenas 0–3, testes (vitest + jsdom), capturas com Playwright, workflow do Pages. Respostas pendentes do utilizador assumidas: casas = ONT 1, 3, 5, 7; comandos da cena 8 ficam com reticências.
 - **2026-10-27** — Fase 2: cenas 4–7 (OMCI, T-CONT/DBA/tipos, GEM port, perfil de linha), linhas mais visíveis a pedido do utilizador, revisão técnica e didáctica aplicada. PR #1 aberto com a fase 1.
+- **2026-10-27** — Fase 3: cenas 8–10 (comandos reais, analogia, resumo + teste), revisão técnica e didáctica aplicada, polimento (letra no projector, câmara em ecrãs estreitos, `?fps`), verificação final, `dist/` e 11 capturas.

@@ -111,7 +111,7 @@ function radio(ctx, tl) {
 // 2) T-CONT → autorização de passagem (semáforo: quando avançar e a que velocidade)
 function autorizacao(ctx, tl) {
   const cam = E.cam.position;
-  tl.add(ctx.tweenCamara([cam.x - 2, 4.6, cam.z + 9], [cam.x - 1.8, 1.2, cam.z - 1.2], 1.4), 0);
+  tl.add(ctx.tweenCamara([cam.x - 0.2, 5.2, cam.z + 11.5], [cam.x - 0.4, 1.2, cam.z - 1.2], 1.4), 0);
   tl.call(ctx.destacarEm(['ont']), null, 0.3);
   aparecer(tl, E.tcont, 0.8);
   // O contentor do T-CONT transforma-se no semáforo
@@ -121,6 +121,7 @@ function autorizacao(ctx, tl) {
   // «A que velocidade»: limite mínimo/máximo (valores do perfil 100, ilustrativos)
   const velocidade = ctx.rotulo('<b>🚦 velocidade</b><span>mín. 10 · máx. 100 Mbit/s (ilustrativo)</span>', E.semaforo.position.clone().add(new THREE.Vector3(1.4, 1.4, 0.6)), {});
   tl.set(velocidade, { visible: true }, 3.4);
+  E.ligacoes.push(velocidade); // escondido nos passos seguintes
   const L = E.semaforo.userData.luzes;
   tl.to(L.vermelho.material, { emissiveIntensity: 0.05, duration: 0.2 }, 4.4);
   tl.to(L.verde.material, { emissiveIntensity: 3, duration: 0.2 }, 4.4);
@@ -155,6 +156,9 @@ function compartimentos(ctx, tl) {
 
 // 4) Perfil de linha → manual de carga, igual para todos os camiões do mesmo tipo
 function manual(ctx, tl) {
+  // Vista geral: sem o camião à espera nem as etiquetas da carga
+  tl.set(E.espera, { visible: false }, 0);
+  E.gems.forEach((g) => tl.set(g.userData.rotulo, { visible: false }, 0));
   tl.add(ctx.tweenCamara([19, 14, 33], [19.5, 1, 3], 1.6), 0);
   tl.call(ctx.destacarEm(['olt']), null, 0.3);
   E.camioes.forEach((c, k) => {

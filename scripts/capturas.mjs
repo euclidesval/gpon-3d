@@ -32,9 +32,9 @@ const PADRAO = [
   { cena: 5, passo: 2, t: 0.7 },
   { cena: 6, passo: 0, t: 0.85 },
   { cena: 7, passo: 4, t: 1 },
-  { cena: 8, passo: 4, t: 0.9 },
-  { cena: 9, passo: 3, t: 1 },
-  { cena: 10, passo: 0, t: 1 },
+  { cena: 8, passo: 4, t: 1 },
+  { cena: 9, passo: 2, t: 1 },
+  { cena: 10, passo: 0, t: 0.45 },
 ];
 
 const largura = Number(args.largura ?? 1600);
