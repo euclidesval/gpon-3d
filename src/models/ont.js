@@ -90,6 +90,7 @@ export function repor(ont) {
   definirLed(ont, 'LOS', COR_LED.LOS, 0);
   definirLed(ont, 'LAN', COR_LED.LAN, 1.8);
   ont.userData.carcaca.material.opacity = 1;
+  ont.userData.carcaca.material.depthWrite = true;
   ont.userData.frente.material.opacity = 1;
   ont.userData.interior.clear();
 }

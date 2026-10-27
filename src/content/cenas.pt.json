@@ -246,20 +246,17 @@
         "omci",
         "ont"
       ],
-      "sentidos": [
-        "down",
-        "up"
-      ],
+      "sentidos": [],
       "camara": {
         "posicao": [
-          -6,
-          14,
-          30
+          4,
+          20,
+          46
         ],
         "alvo": [
-          2,
-          1,
-          0
+          6,
+          0.5,
+          -0.5
         ]
       },
       "passos": [
@@ -301,19 +298,16 @@
         "dba",
         "ont"
       ],
-      "sentidos": [
-        "down",
-        "up"
-      ],
+      "sentidos": [],
       "camara": {
         "posicao": [
-          2,
-          18,
-          34
+          3,
+          17,
+          40
         ],
         "alvo": [
-          4,
-          0.5,
+          6,
+          1.5,
           0
         ]
       },
@@ -336,7 +330,8 @@
         {
           "id": "tipos",
           "rotulo": "4. Tipos de T-CONT",
-          "actor": "dba"
+          "actor": "dba",
+          "legenda": "Há 5 tipos de T-CONT: do mais garantido (tipo 1, fixo) ao melhor esforço (tipo 4)."
         }
       ],
       "tiposTcont": [
@@ -398,14 +393,14 @@
       ],
       "camara": {
         "posicao": [
-          14,
-          4,
-          8
+          31,
+          3.1,
+          5.4
         ],
         "alvo": [
-          14,
-          1.6,
-          -3
+          30.9,
+          1.9,
+          -1.6
         ]
       },
       "passos": [
@@ -442,14 +437,14 @@
       "sentidos": [],
       "camara": {
         "posicao": [
-          14,
-          4,
-          8
+          28.6,
+          3.2,
+          5.8
         ],
         "alvo": [
-          14,
-          1.6,
-          -3
+          29.0,
+          2.0,
+          -0.6
         ]
       },
       "codigo": [
@@ -512,7 +507,8 @@
         {
           "id": "copiar",
           "rotulo": "Reutilizar",
-          "actor": "omci"
+          "actor": "omci",
+          "legenda": "O mesmo perfil serve para muitas ONT: a OLT aplica-o a cada uma pelo OMCI."
         }
       ],
       "avisos": [
@@ -525,8 +521,8 @@
       "legenda": "Os dois comandos ligam tudo: o primeiro prepara a ONT, o segundo diz à OLT o que fazer com o tráfego que chega.",
       "analogia": "Primeiro carrega-se o camião segundo o manual; depois, à saída da central, troca-se a etiqueta da carga e junta-se a etiqueta da transportadora.",
       "nota": [
-        "`ont add … omci ont-lineprofile-id 100 …` — a ONT fica associada ao perfil de linha 100; a OLT envia-lhe a configuração pelo OMCI.",
-        "`service-port … gemport 2 … user-vlan 100 …` — diz à OLT o que fazer com o tráfego dessa GEM: a VLAN 100 é traduzida para a VLAN interna 2000 e recebe a VLAN externa 1410.",
+        "`ont add 12 7 … omci ont-lineprofile-id 100 …` — regista a ONT 7 e associa-a ao perfil de linha 100; a OLT envia-lhe a configuração pelo OMCI. O número de série e a descrição estão anonimizados.",
+        "`service-port 138 vlan 1410 gpon 0/1/12 ont 7 gemport 2 … user-vlan 100 tag-transform translate-and-add inner-vlan 2000` — diz à OLT o que fazer com o tráfego da GEM 2 da ONT 7: a VLAN 100 é traduzida para a VLAN interna 2000 e recebe a VLAN externa 1410.",
         "Na Huawei, `gemport 2` é o índice da GEM no perfil de linha; o identificador físico da GEM port na fibra é atribuído pela OLT."
       ],
       "actorAtivo": [
@@ -551,8 +547,8 @@
         ]
       },
       "comandos": [
-        "ont add … omci ont-lineprofile-id 100 …",
-        "service-port … gemport 2 … user-vlan 100 …"
+        "ont add 12 7 sn-auth \"48575443XXXXXXXX\" omci ont-lineprofile-id 100 ont-srvprofile-id 100 desc \"Cliente_Exemplo\"",
+        "service-port 138 vlan 1410 gpon 0/1/12 ont 7 gemport 2 multi-service user-vlan 100 tag-transform translate-and-add inner-vlan 2000 inner-priority 0"
       ],
       "passos": [
         {

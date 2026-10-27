@@ -118,3 +118,26 @@ export function abanar(camera, forca = 0.18, vezes = 6) {
   tl.call(() => base && camera.position.copy(base));
   return tl;
 }
+
+// Linha grossa e visível (as linhas WebGL têm sempre 1 px): tubo contínuo ou tracejado ao longo de uma curva.
+export function tuboLinha(curva, cor, { raio = 0.06, tracejado = false, traco = 0.6, espaco = 0.35, emissivo = 1.2, opacidade = 1 } = {}) {
+  const mat = new THREE.MeshStandardMaterial({ color: cor, emissive: cor, emissiveIntensity: emissivo, roughness: 0.4, transparent: opacidade < 1, opacity: opacidade });
+  const g = new THREE.Group();
+  const comp = curva.getLength();
+  if (!tracejado) {
+    const m = new THREE.Mesh(new THREE.TubeGeometry(curva, Math.max(16, Math.round(comp * 8)), raio, 8, false), mat);
+    m.userData.semContorno = true;
+    g.add(m);
+  } else {
+    for (let s = 0; s < comp; s += traco + espaco) {
+      const a = s / comp;
+      const b = Math.min(1, (s + traco) / comp);
+      const pts = [0, 0.33, 0.66, 1].map((f) => curva.getPointAt(a + (b - a) * f));
+      const seg = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 4, raio, 6, false), mat);
+      seg.userData.semContorno = true;
+      g.add(seg);
+    }
+  }
+  g.userData.material = mat;
+  return g;
+}

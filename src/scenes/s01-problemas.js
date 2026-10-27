@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { CORES } from '../core/colors.js';
 import { escapar } from '../ui/texto.js';
+import { tuboLinha } from './util.js';
 
 // Cena 1 — Três problemas: três cartões com «?» apontam para o sítio de cada problema.
 const COR_CONCEITO = { omci: CORES.omci, tcont: CORES.tcont, gem: '#9aa3ad' };
@@ -23,11 +24,10 @@ export default {
       ...rede.curvas.derivacoes[0].getSpacedPoints(40).slice(1),
     ].map((p) => p.clone().add(new THREE.Vector3(0, 0.28, 0)));
     const arco = new THREE.CatmullRomCurve3(pts);
-    const geo = new THREE.BufferGeometry().setFromPoints(arco.getSpacedPoints(300));
-    const linha = new THREE.Line(geo, new THREE.LineDashedMaterial({ color: CORES.omci, dashSize: 0.5, gapSize: 0.35, transparent: true, opacity: 0 }));
-    linha.computeLineDistances();
-    ctx.adicionar(linha);
-    const ponto = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 12), new THREE.MeshStandardMaterial({ color: CORES.omci, emissive: CORES.omci, emissiveIntensity: 3 }));
+    const linha = tuboLinha(arco, CORES.omci, { raio: 0.09, tracejado: true, traco: 0.7, espaco: 0.4, emissivo: 2, opacidade: 0.999 });
+    linha.userData.material.opacity = 0;
+    ctx.adicionar(linha, { brilho: true });
+    const ponto = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 12), new THREE.MeshStandardMaterial({ color: CORES.omci, emissive: CORES.omci, emissiveIntensity: 3 }));
     ponto.visible = false;
     ctx.adicionar(ponto, { brilho: true });
     const percurso = { u: 0 };
@@ -58,7 +58,7 @@ export default {
       tl.set(cartao, { visible: true }, t0);
       tl.fromTo(cartao.element, { opacity: 0 }, { opacity: 1, duration: 0.5 }, t0);
       if (i === 0) {
-        tl.to(linha.material, { opacity: 0.9, duration: 0.6 }, t0);
+        tl.to(linha.userData.material, { opacity: 1, duration: 0.6 }, t0);
         tl.set(ponto, { visible: true }, t0);
         tl.fromTo(percurso, { u: 0 }, { u: 1, duration: 2.4, repeat: 1, yoyo: true, ease: 'power1.inOut', onUpdate: () => arco.getPointAt(percurso.u, ponto.position) }, t0);
       }

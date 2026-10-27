@@ -123,7 +123,7 @@ export function criarCasa(numero, { corParede = '#e9e0d2' } = {}) {
   tv.position.set(1.7, 0.65, -P / 2 + esp + 0.3);
   g.add(tv);
 
-  g.userData = { numero, ont, router, portatil, telefone, tv, dimensoes: { L, P, A } };
+  g.userData = { numero, ont, router, portatil, telefone, tv, caboPontos: pontosCabo, dimensoes: { L, P, A } };
   return g;
 }
 
