@@ -297,7 +297,7 @@ code {
 /* Faixa central (texto curto dentro da animação) */
 .faixa {
   position: absolute;
-  top: 18%;
+  top: 26%;
   left: 50%;
   transform: translate(-50%, -10px);
   font-size: 1.8rem;
@@ -414,6 +414,8 @@ code {
 .cartao-problema small { display: block; color: var(--texto-suave); margin-top: 0.2rem; font-size: 0.75rem; }
 .cartao-problema .conceito { display: inline-block; margin-top: 0.35rem; font-weight: 800; font-size: 0.8rem; padding: 0.05rem 0.5rem; border-radius: 6px; }
 
+.rotulo-janela { padding: 0.05rem 0.45rem; background: rgba(40, 26, 4, 0.85); border-color: var(--up); }
+.rotulo-janela b { font-size: 0.8rem; }
 .janela-tdma {
   font-size: 0.75rem;
   font-weight: 800;

@@ -92,6 +92,8 @@ export function criarContexto({ mundo, camera, controlos = null, motor = null, u
       for (const filho of [...mundo.temporario.children]) {
         mundo.temporario.remove(filho);
         filho.traverse((o) => {
+          // Rótulos HTML filhos de outros objectos não recebem o evento 'removed': tirar do DOM.
+          if (o.isCSS2DObject) o.element.remove();
           if (o.isMesh || o.isPoints || o.isLine) {
             o.geometry?.dispose();
             if (o.material && !o.material.userData?.partilhado) o.material.dispose?.();

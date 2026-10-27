@@ -9,10 +9,10 @@
 
 | Passo (método WAT) | Estado |
 |---|---|
-| 1. Planear (`PLANO.md`) | ✅ feito — **a aguardar OK do utilizador** |
-| 2. Esqueleto (Vite, cena base, UI, navegação, Pages) | ⏳ por fazer |
-| 3. Modelos procedurais (OLT, fibra, splitter, ONT, casas, router, dispositivos) | ⏳ por fazer |
-| 4. Cenas 0–3 → **paragem de validação** | ⏳ por fazer |
+| 1. Planear (`PLANO.md`) | ✅ feito — aprovado pelo utilizador |
+| 2. Esqueleto (Vite, cena base, UI, navegação, Pages) | ✅ feito |
+| 3. Modelos procedurais (OLT, fibra, splitter, ONT, casas, router, dispositivos) | ✅ feito |
+| 4. Cenas 0–3 → **paragem de validação** | ✅ feito — **a aguardar validação do utilizador** |
 | 5. Cenas 4–7 | ⏳ por fazer |
 | 6. Cenas 8–10 | ⏳ por fazer |
 | 7. Polimento (desempenho, responsividade, acessibilidade) | ⏳ por fazer |
@@ -213,5 +213,20 @@ Em cada paragem: commit + push para `claude/zen-noether-3wwknm`, link do Pages e
 
 ---
 
+## Notas para quem continua
+
+- **Contrato das cenas** (`src/app/apresentacao.js`): cada cena exporta `{ id, passo(ctx, i), montar?(ctx), camaraPropria? }`.
+  `passo` devolve uma `gsap.timeline({ paused: true })` com **tudo** lá dentro (nada de tweens soltos):
+  para saltar para o passo N, o controlador limpa a cena e avança instantaneamente os passos 0..N-1.
+- Objectos temporários vão para `ctx.temp` (via `ctx.adicionar`, `ctx.rotulo`); `ctx.limpar()` remove-os e repõe a rede.
+- Ajudas em `src/scenes/util.js`: `criarPacote`, `percorrer`, `rebentar`, `marca`, `clarao`, `piscarLed`, `abanar`.
+- Curvas da fibra: `rede.curvas.alimentacao` (OLT→splitter, u=0 na OLT) e `rede.curvas.derivacoes[k]` (splitter→ONT k, u=0 no splitter).
+- Casas visíveis: ONT 1, 3, 5, 7 (saídas 1, 3, 5, 7 do splitter; as outras 4 com tampa). `rede.onts[k]`, `rede.routers[k]`.
+- Cenas 4–10 estão como `cenaPorFazer` em `src/scenes/index.js` (mostram a rede e o actor activo).
+- Depuração/capturas: `#cena=N&passo=P&t=0.5` (progresso fixo), `&cam=x,y,z,ax,ay,az` (câmara), `?captura=1`.
+- Playwright: `scripts/capturas.mjs` copia o canvas para uma `<img>` antes de capturar (o headless nem sempre apresenta o último frame WebGL).
+- `dist/` está no `.gitignore` durante o desenvolvimento; na entrega final é gerado e incluído.
+
 ## Registo de sessões
 - **2026-10-27** — Plano criado. Versões verificadas no npm: three 0.186.1, gsap 3.15.0, postprocessing 6.39.5, vite 8.3.5, vitest 5.0.5. Node 22.
+- **2026-10-27** — Passos 2–4: esqueleto, modelos procedurais, cenas 0–3, testes (vitest + jsdom), capturas com Playwright, workflow do Pages. Respostas pendentes do utilizador assumidas: casas = ONT 1, 3, 5, 7; comandos da cena 8 ficam com reticências.
