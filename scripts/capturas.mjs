@@ -1,6 +1,7 @@
 // Capturas de ecrã de cada cena com Playwright (headless) + verificação de erros na consola.
 // Uso:
 //   npm run build && npm run capturas                 → todas as cenas para capturas/
+//   npm run capturas -- --ate 3                       → só as cenas 0 a 3
 //   node scripts/capturas.mjs --cena 3 --passo 1 --t 0.6 --saida /tmp/x.png
 import { createRequire } from 'node:module';
 import { preview } from 'vite';
@@ -26,7 +27,7 @@ const PADRAO = [
   { cena: 0, passo: 0, t: 0.55 },
   { cena: 1, passo: 0, t: 1 },
   { cena: 2, passo: 0, t: 0.42 },
-  { cena: 3, passo: 0, t: 0.5 },
+  { cena: 3, passo: 0, t: 0.4 },
   { cena: 4, passo: 0, t: 0.7 },
   { cena: 5, passo: 2, t: 0.7 },
   { cena: 6, passo: 0, t: 0.8 },
@@ -49,7 +50,10 @@ const erros = [];
 pagina.on('console', (m) => m.type() === 'error' && erros.push(m.text()));
 pagina.on('pageerror', (e) => erros.push(String(e)));
 
-const alvos = args.cena !== undefined ? [{ cena: Number(args.cena), passo: Number(args.passo ?? 0), t: Number(args.t ?? 1) }] : PADRAO;
+const alvos =
+  args.cena !== undefined
+    ? [{ cena: Number(args.cena), passo: Number(args.passo ?? 0), t: Number(args.t ?? 1) }]
+    : PADRAO.filter((a) => a.cena <= Number(args.ate ?? 10)); // --ate N: só as cenas 0..N
 mkdirSync(resolve(raiz, 'capturas'), { recursive: true });
 
 for (const a of alvos) {

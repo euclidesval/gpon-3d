@@ -22,24 +22,28 @@ function colisao(ctx) {
   tl.add(ctx.tweenCamara(cam.posicao, cam.alvo, 0.8), 0);
   tl.call(ctx.destacarEm(['ont']), null, 0.2);
 
-  const dur = 2.4;
+  rede.rotulos.casas.forEach((r) => tl.set(r, { visible: true }, 0));
+  // As 4 ONT começam ao mesmo tempo (pequeno desfasamento para se verem as 4 etiquetas) e chegam juntas
+  const dur = 2.6;
   const t0 = 0.6;
   C.derivacoes.forEach((curva, k) => {
     const n = rede.numerosONT[k];
     const pac = criarPacote(ctx, CORES.up, `ONT ${n}`, { classe: 'rotulo-pacote up' });
-    tl.add(viajar(pac, curva, { de: 1, ate: 0, duracao: dur, ease: 'power1.in' }), t0);
+    const atraso = k * 0.12;
+    tl.add(viajar(pac, curva, { de: 1, ate: 0, duracao: dur - atraso, ease: 'power1.in' }), t0 + atraso);
+    tl.call(() => rede.rotulos.casas[k].element.classList.add('aceso'), null, t0 + atraso);
     tl.set(pac, { visible: false }, t0 + dur);
   });
   const tc = t0 + dur;
-  tl.add(clarao(ctx, CORES.alerta, juncao, { raio: 1.0, duracao: 1.0 }), tc);
+  tl.add(clarao(ctx, CORES.alerta, juncao, { raio: 1.6, duracao: 1.2 }), tc);
   tl.add(rebentar(ctx, CORES.up, juncao, { n: 70, raio: 1.8, duracao: 1.1 }), tc);
   tl.add(rebentar(ctx, CORES.alerta, juncao, { n: 50, raio: 1.4, duracao: 1.0 }), tc + 0.05);
   tl.add(abanar(camera, 0.22, 8), tc);
   tl.add(marca(ctx, '⚠', 'alerta', rede.splitter.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 2.4, 0)), { duracao: 3.4 }), tc);
-  tl.call(ctx.faixa('Sem regras, ninguém se entende.', 'alerta'), null, tc + 0.2);
+  tl.call(ctx.faixa('Sem regras, ninguém se entende.<br><small>(o que aconteceria sem TDMA)</small>', 'alerta'), null, tc + 0.2);
 
   // Ruído (sinal ilegível) segue até à OLT
-  const ruido = criarPacote(ctx, CORES.alerta, '≈ ruído', { classe: 'rotulo-pacote up' });
+  const ruido = criarPacote(ctx, '#8a8f96', '≈ ruído', { classe: 'rotulo-pacote' });
   ruido.scale.set(1.4, 0.7, 1.4);
   tl.add(viajar(ruido, C.alimentacao, { de: 1, ate: 0, duracao: 2.2, ease: 'none' }), tc + 0.6);
   tl.set(ruido, { visible: false }, tc + 2.8);
@@ -54,6 +58,7 @@ function tdma(ctx) {
   const C = rede.curvas;
   const tl = gsap.timeline({ paused: true });
   tl.call(ctx.faixa(''), null, 0);
+  rede.rotulos.casas.forEach((r) => tl.set(r, { visible: true }, 0));
   tl.add(ctx.tweenCamara([2, 15, 34], [4, 0.5, 0], 1.4), 0);
   tl.call(ctx.destacarEm(['olt']), null, 0.2);
 
@@ -96,6 +101,7 @@ function tdma(ctx) {
       // A ONT k envia na sua janela; todas demoram o mesmo até ao splitter → chegam em fila
       const pac = criarPacote(ctx, CORES.up, `ONT ${rede.numerosONT[k]}`, { classe: 'rotulo-pacote up' });
       tl.call(ctx.destacarEm(['ont']), null, tj);
+      tl.call(() => rede.rotulos.casas.forEach((r, m) => r.element.classList.toggle('aceso', m === k)), null, tj);
       tl.add(viajar(pac, C.derivacoes[k], { de: 1, ate: 0, duracao: dDeriv }), tj);
       tl.add(viajar(pac, C.alimentacao, { de: 1, ate: 0, duracao: dAlim }), tj + dDeriv);
       tl.set(pac, { visible: false }, tj + dDeriv + dAlim);

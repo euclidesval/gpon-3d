@@ -139,12 +139,13 @@ export class Interface {
     const d = e.dados;
     const r = this.ref;
     r.num.textContent = this.conteudo.titulo;
-    r.titulo.innerHTML = formatar(d.titulo, this.siglas);
+    r.titulo.innerHTML = formatar(d.passos?.[e.passo]?.titulo ?? d.titulo, this.siglas);
     r.indicador.innerHTML = `Cena <b>${e.indice + 1}</b> de ${e.total}` + (e.nPassos > 1 ? ` <small>· passo ${e.passo + 1}/${e.nPassos}</small>` : '');
     const passo = d.passos?.[e.passo];
     r.passo.hidden = !(passo && e.nPassos > 1);
     if (passo) r.passo.innerHTML = formatar(passo.rotulo, this.siglas);
-    r.legendaTexto.innerHTML = formatar(e.analogia ? d.analogia : d.legenda, this.siglas);
+    const legenda = d.passos?.[e.passo]?.legenda ?? d.legenda;
+    r.legendaTexto.innerHTML = formatar(e.analogia ? d.analogia : legenda, this.siglas);
     r.legenda.classList.toggle('modo-analogia', e.analogia);
     r.legendaIcone.textContent = e.analogia ? '🚚' : '';
     r.notasCorpo.innerHTML = (d.nota ?? []).map((p) => `<p>${formatar(p, this.siglas)}</p>`).join('');
@@ -180,7 +181,9 @@ export class Interface {
       return;
     }
     f.className = `faixa visivel ${tipo}`;
-    f.innerHTML = formatar(texto, this.siglas);
+    // «<br>» separa a frase principal de uma segunda linha mais pequena
+    const [principal, segunda] = texto.split('<br>');
+    f.innerHTML = formatar(principal, this.siglas) + (segunda ? `<small>${formatar(segunda.replace(/<\/?small>/g, ''), this.siglas)}</small>` : '');
   }
 
   sobreposicao(html, classe = '') {

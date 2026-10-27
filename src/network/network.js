@@ -103,13 +103,19 @@ export function criarRede() {
     return f;
   });
 
-  // Saídas livres: tampas de protecção
+  // As outras 4 saídas servem casas que não aparecem: fibras que descem para uma caixa enterrada
+  const caixaVisita = caixa(1.0, 0.08, 0.7, M.betao);
+  caixaVisita.position.set(LAYOUT.splitter.x + 1.4, 0.04, LAYOUT.splitter.z - 1.4);
+  rede.add(caixaVisita);
   splitter.userData.saidas.forEach((p, i) => {
     if (saidasUsadas.includes(i)) return;
-    const tampa = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.07, 10), M.plasticoPreto);
-    tampa.rotation.z = Math.PI / 2;
-    tampa.position.copy(p).add(new THREE.Vector3(0.02, 0, 0));
-    splitter.add(tampa);
+    const pSai = splitter.localToWorld(p.clone());
+    const destino = caixaVisita.position.clone().add(new THREE.Vector3((i % 4) * 0.15 - 0.2, -0.2, 0));
+    const f = criarFibra(
+      [pSai, new THREE.Vector3(pSai.x + 0.35, pSai.y - 0.1, pSai.z - 0.1), new THREE.Vector3(destino.x, 0.5, destino.z + 0.2), destino],
+      { nome: `Fibra saída ${i + 1}`, raio: 0.045 },
+    );
+    rede.add(f);
   });
 
   // Rótulos dos componentes
@@ -117,7 +123,7 @@ export function criarRede() {
     olt: ancorar(olt, criarRotulo('<b>OLT</b><span>na central</span>'), new THREE.Vector3(1.6, 2.2, 0.4)),
     central: ancorar(central, criarRotulo('<b>Central</b>'), new THREE.Vector3(0, 5.2, 0)),
     fibra: ancorar(rede, criarRotulo('<b>Fibra</b><span>uma só</span>'), new THREE.Vector3(-9, 0.6, zP)),
-    splitter: ancorar(splitter, criarRotulo('<b>Splitter 1:8</b><span>passivo</span>'), new THREE.Vector3(0, 2.1, 0)),
+    splitter: ancorar(splitter, criarRotulo('<b>Splitter 1:8</b><span>divide em 8 · passivo</span>'), new THREE.Vector3(0, 2.1, 0)),
     casas: casas.map((c) => ancorar(c, criarRotulo(`<b>ONT ${c.userData.numero}</b>`), new THREE.Vector3(-1.0, 5.4, -1.8))),
   };
 
@@ -157,7 +163,7 @@ export function criarRede() {
         .forEach((r) => (r.visible = false));
       for (const f of [alimentacao, ...derivacoes]) {
         f.userData.bainha.material.emissive?.set('#000');
-        f.userData.bainha.material.opacity = 0.42;
+        f.userData.bainha.material.opacity = 0.32;
       }
       for (const c of casas) c.visible = true;
     },

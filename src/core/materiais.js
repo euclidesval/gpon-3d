@@ -27,11 +27,11 @@ export function materiais() {
     caboCinza: new THREE.MeshStandardMaterial({ color: '#b7bcc2', roughness: 0.6 }),
     // Cabo de fibra monomodo: bainha amarela translúcida para se verem os impulsos lá dentro.
     fibraBainha: new THREE.MeshPhysicalMaterial({
-      color: '#f2c94c',
+      color: '#e6d9a8',
       roughness: 0.35,
       metalness: 0,
       transparent: true,
-      opacity: 0.42,
+      opacity: 0.32,
       depthWrite: false,
       clearcoat: 0.4,
     }),

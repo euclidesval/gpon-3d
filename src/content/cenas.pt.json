@@ -14,9 +14,10 @@
     "DBA": "Dynamic Bandwidth Allocation: função da OLT que ajusta em tempo real as janelas a subir de cada T-CONT.",
     "VLAN": "Virtual LAN: etiqueta com um número, colada ao pacote, que identifica a que serviço ou rede ele pertence.",
     "TDMA": "Time Division Multiple Access: partilha de um meio por janelas de tempo. Cada um fala na sua vez.",
-    "LOS": "Loss of Signal: perda de sinal óptico. O LED LOS da ONT acende quando a luz da fibra não chega.",
+    "LOS": "Loss of Signal: perda de sinal óptico.",
     "LAN": "Local Area Network: a rede dentro de casa (portas Ethernet da ONT e do router).",
-    "ITU-T": "Sector de normalização das telecomunicações da União Internacional de Telecomunicações."
+    "ITU-T": "Sector de normalização das telecomunicações da União Internacional de Telecomunicações.",
+    "IPTV": "Televisão sobre IP: canais de TV entregues pela rede de dados."
   },
   "actores": [
     {
@@ -60,7 +61,7 @@
         "Uma rede GPON liga a OLT, na central, a várias ONT, em casa dos clientes, através de uma só fibra e de um splitter.",
         "Comprimentos de onda: 1490 nm a descer (downstream) e 1310 nm a subir (upstream).",
         "Débitos nominais: 2,488 Gbit/s a descer e 1,244 Gbit/s a subir.",
-        "O splitter é passivo: não decide nada e não tem energia. Este splitter é 1:8; vêem-se 4 casas e as outras 4 saídas ficam livres."
+        "O splitter é passivo: não decide nada e não tem energia. Este splitter é 1:8: vêem-se 4 casas; as outras 4 saídas servem casas que não aparecem."
       ],
       "actorAtivo": [
         "olt",
@@ -202,28 +203,30 @@
       ],
       "camara": {
         "posicao": [
-          15,
-          15,
-          36
+          9,
+          11,
+          25
         ],
         "alvo": [
-          15,
+          9,
           0.5,
-          0
+          1
         ]
       },
       "passos": [
         {
           "id": "colisao",
-          "rotulo": "Sem regras",
+          "rotulo": "Sem regras (simulação)",
           "actor": "ont",
-          "texto": "Sem regras, ninguém se entende."
+          "texto": "Sem regras, ninguém se entende.",
+          "legenda": "A subir, todas as ONT partilham a mesma fibra. Se falarem ao mesmo tempo, os sinais chocam."
         },
         {
           "id": "tdma",
           "rotulo": "Com TDMA",
           "actor": "olt",
-          "texto": "Cada ONT na sua janela."
+          "texto": "Cada ONT na sua janela.",
+          "titulo": "Upstream: cada ONT na sua vez"
         }
       ],
       "avisos": []

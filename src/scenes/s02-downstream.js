@@ -24,9 +24,12 @@ export default {
       [0, 1.6, 1.3, 7.4],
     ];
 
+    // Número de cada casa sempre visível
+    rede.rotulos.casas.forEach((r) => tl.set(r, { visible: true }, 0));
+
     rondas.forEach(([destino, dA, dD, t0], r) => {
       const n = rede.numerosONT[destino];
-      const etiqueta = `🔒 GEM · ONT ${n}`;
+      const etiqueta = `🔒 GEM da ONT ${n}`;
       const pac = criarPacote(ctx, CORES.down, etiqueta);
       tl.call(ctx.destacarEm(['olt']), null, t0);
       tl.add(percorrer(pac, [C.alimentacao], [dA]), t0);
@@ -48,11 +51,11 @@ export default {
           tl.set(copia, { visible: false }, chegada + 0.35);
           tl.call(ctx.destacarEm(['ont']), null, chegada);
           tl.add(piscarLed(rede.onts[i], 'PON', '#33ff77', 3), chegada);
-          tl.add(marca(ctx, '✓', 'sim', fim.clone().add(new THREE.Vector3(0, 0.9, 0.3)), { duracao: r === 0 ? 2.2 : 1.2 }), chegada);
+          tl.add(marca(ctx, '✓', 'sim', fim.clone().add(new THREE.Vector3(0, 1.5, 0.3)), { duracao: r === 0 ? 2.2 : 1.2 }), chegada);
         } else {
           tl.set(copia, { visible: false }, chegada);
           tl.add(rebentar(ctx, CORES.down, fim, { raio: 0.9 }), chegada);
-          tl.add(marca(ctx, '✕', 'nao', fim.clone().add(new THREE.Vector3(0, 0.9, 0.3)), { duracao: r === 0 ? 2.2 : 1.2 }), chegada);
+          tl.add(marca(ctx, '✕', 'nao', fim.clone().add(new THREE.Vector3(0, 1.5, 0.3)), { duracao: r === 0 ? 2.2 : 1.2 }), chegada);
         }
         // Repor a escala para o caso de repetir
         tl.set(copia.scale, { x: 1, y: 1, z: 1 }, chegada + 0.4);
