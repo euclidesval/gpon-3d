@@ -124,25 +124,25 @@ function descer(ctx) {
     { gem: 2, texto: 'GEM · IPTV' },
   ];
   tramas.forEach((t, k) => {
-    const t0 = 0.6 + k * 1.1;
+    const t0 = 0.6 + k * 1.6;
     const luz = criarPacote(ctx, CORES.down, t.texto);
     tl.add(viajar(luz, curva, { de: 0.6, ate: 1, duracao: 1.2 }), t0);
     tl.set(luz, { visible: false }, t0 + 1.2);
     if (t.gem === null) {
       tl.add(rebentar(ctx, CORES.down, E.pOnt, { raio: 0.6 }), t0 + 1.2);
-      tl.add(marca(ctx, '✕', 'nao', E.pOnt.clone().add(new THREE.Vector3(0.7, 0.5, 0.3)), { duracao: 0.9 }), t0 + 1.2);
+      tl.add(marca(ctx, '✕ não é desta ONT', 'nao', E.pOnt.clone().add(new THREE.Vector3(-0.6, -0.5, 0.3)), { duracao: 1.2 }), t0 + 1.2);
       return;
     }
     const g = E.interior.gems[t.gem];
     const pac = pacoteServico(ctx, g.userData.cor);
     tl.add(mover(pac, E.pOnt, E.pGem[t.gem].clone().add(new THREE.Vector3(0, 0.05, 0.25)), 0.8), t0 + 1.2);
     tl.to(g.material, { emissiveIntensity: 1.4, duration: 0.2, yoyo: true, repeat: 1 }, t0 + 2.0);
-    tl.set(pac, { visible: false }, t0 + 2.6);
+    tl.set(pac, { visible: false }, t0 + 2.4);
   });
   // A GEM 2 segue para o router com a VLAN 100 e chega ao portátil
   const pac = pacoteServico(ctx, CORES.gemInternet);
   const vlan = etiquetaVlan(ctx, 100, pac, new THREE.Vector3(0, 0.22, 0));
-  const t1 = 5.6;
+  const t1 = 7.4;
   tl.call(ctx.destacarEm(['router']), null, t1);
   tl.add(mover(pac, E.pGem[0].clone().add(new THREE.Vector3(0, 0.05, 0.25)), E.pOnt, 0.8), t1);
   tl.add(viajar(pac, E.cabo, { de: 0, ate: 1, duracao: 1.2, alinhar: false }), t1 + 0.8);
