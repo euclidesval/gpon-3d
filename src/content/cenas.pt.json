@@ -1,0 +1,770 @@
+{
+  "titulo": "Como funciona uma rede GPON",
+  "subtitulo": "OMCI, T-CONT, GEM ports e Perfil de linha",
+  "siglas": {
+    "GPON": "Gigabit-capable Passive Optical Network: rede de fibra óptica em que uma só fibra serve várias casas através de um splitter passivo.",
+    "PON": "Passive Optical Network: rede óptica passiva. Entre a central e as casas não há equipamentos com energia.",
+    "OLT": "Optical Line Terminal: o equipamento na central que controla a rede e todas as ONT ligadas a ela.",
+    "ONT": "Optical Network Terminal: a caixa em casa do cliente que recebe a fibra e entrega o serviço ao router.",
+    "ONU": "Optical Network Unit: nome usado na norma para o equipamento do cliente (aqui, a ONT).",
+    "OMCI": "ONU Management and Control Interface (ITU-T G.988): o canal de gestão entre a OLT e cada ONT, dentro da própria fibra.",
+    "T-CONT": "Transmission Container: a unidade a que a OLT atribui banda a subir. Identifica-se por um Alloc-ID.",
+    "Alloc-ID": "Identificador de um T-CONT. A OLT usa-o no mapa de banda para dizer quem pode transmitir e quando.",
+    "GEM": "GPON Encapsulation Method: forma de empacotar o tráfego na fibra. Cada GEM port é um canal lógico com identificador próprio.",
+    "DBA": "Dynamic Bandwidth Allocation: função da OLT que ajusta em tempo real as janelas a subir de cada T-CONT.",
+    "VLAN": "Virtual LAN: etiqueta com um número, colada ao pacote, que identifica a que serviço ou rede ele pertence.",
+    "TDMA": "Time Division Multiple Access: partilha de um meio por janelas de tempo. Cada um fala na sua vez.",
+    "LOS": "Loss of Signal: perda de sinal óptico. O LED LOS da ONT acende quando a luz da fibra não chega.",
+    "LAN": "Local Area Network: a rede dentro de casa (portas Ethernet da ONT e do router).",
+    "ITU-T": "Sector de normalização das telecomunicações da União Internacional de Telecomunicações."
+  },
+  "actores": [
+    {
+      "id": "olt",
+      "nome": "OLT",
+      "papel": "Na central. Fala para todas as ONT, dá a vez a cada uma e traduz as VLAN."
+    },
+    {
+      "id": "splitter",
+      "nome": "Splitter",
+      "papel": "Passivo, sem energia. Divide a luz a descer e junta-a a subir. Não decide nada."
+    },
+    {
+      "id": "ont",
+      "nome": "ONT",
+      "papel": "Em casa do cliente. Fica com o que é seu e envia só na sua janela."
+    },
+    {
+      "id": "router",
+      "nome": "Router",
+      "papel": "Em casa do cliente. Marca o tráfego com a VLAN e entrega-o aos dispositivos."
+    },
+    {
+      "id": "omci",
+      "nome": "OMCI",
+      "papel": "Canal de gestão. A OLT configura, monitoriza e actualiza a ONT à distância."
+    },
+    {
+      "id": "dba",
+      "nome": "DBA",
+      "papel": "Na OLT. Ajusta em tempo real quanto e quando cada T-CONT pode enviar."
+    }
+  ],
+  "cenas": [
+    {
+      "id": "s00-rede",
+      "titulo": "A rede numa vista",
+      "legenda": "Uma só fibra sai da central e é dividida para várias casas. Vamos ver como é que todas a partilham sem confusão.",
+      "analogia": "Uma só estrada sai do centro de controlo e divide-se num cruzamento para várias ruas. Todos os camiões têm de a partilhar sem acidentes.",
+      "nota": [
+        "Uma rede GPON liga a OLT, na central, a várias ONT, em casa dos clientes, através de uma só fibra e de um splitter.",
+        "Comprimentos de onda: 1490 nm a descer (downstream) e 1310 nm a subir (upstream).",
+        "Débitos nominais: 2,488 Gbit/s a descer e 1,244 Gbit/s a subir.",
+        "O splitter é passivo: não decide nada e não tem energia. Este splitter é 1:8; vêem-se 4 casas e as outras 4 saídas ficam livres."
+      ],
+      "actorAtivo": [
+        "olt",
+        "splitter",
+        "ont"
+      ],
+      "sentidos": [],
+      "camara": {
+        "posicao": [
+          4,
+          22,
+          50
+        ],
+        "alvo": [
+          5,
+          0.5,
+          -0.5
+        ]
+      },
+      "passos": [
+        {
+          "id": "vista",
+          "rotulo": "A rede",
+          "actor": "olt"
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s01-problemas",
+      "titulo": "Três problemas",
+      "legenda": "Controlar a ONT à distância. Partilhar a fibra a subir. Separar tipos de tráfego.",
+      "analogia": "Como dar ordens aos condutores à distância? Como evitar choques na estrada partilhada? Como separar a carga dentro do camião?",
+      "nota": [
+        "Três conceitos resolvem estes problemas:",
+        "OMCI — controlar e configurar a ONT à distância, a partir da OLT.",
+        "T-CONT — decidir quem pode transmitir a subir, quando e quanto.",
+        "GEM port — separar, dentro da mesma ONT, os vários tipos de tráfego.",
+        "O perfil de linha junta tudo num modelo reutilizável que a OLT envia à ONT."
+      ],
+      "actorAtivo": [
+        "olt",
+        "ont"
+      ],
+      "sentidos": [],
+      "camara": {
+        "posicao": [
+          4,
+          18,
+          42
+        ],
+        "alvo": [
+          6,
+          1.5,
+          -1
+        ]
+      },
+      "passos": [
+        {
+          "id": "problemas",
+          "rotulo": "Três perguntas",
+          "actor": "ont"
+        }
+      ],
+      "problemas": [
+        {
+          "id": "omci",
+          "titulo": "Controlar a ONT à distância",
+          "onde": "OLT ↔ ONT"
+        },
+        {
+          "id": "tcont",
+          "titulo": "Partilhar a fibra a subir",
+          "onde": "Fibra a subir"
+        },
+        {
+          "id": "gem",
+          "titulo": "Separar tipos de tráfego",
+          "onde": "Interior da ONT"
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s02-downstream",
+      "titulo": "Downstream: a OLT fala para todos",
+      "legenda": "A descer, a OLT envia tudo para todos. Cada ONT só fica com o que é seu, e o tráfego vai cifrado.",
+      "analogia": "A descer, o centro manda todas as encomendas por todas as ruas. Cada casa abre só a caixa com o seu nome, e as caixas vão trancadas.",
+      "nota": [
+        "Downstream — a OLT envia tudo para todas as ONT do splitter, em difusão. Cada ONT fica só com o que é seu.",
+        "O tráfego de cada ONT é cifrado.",
+        "Não é o splitter que encaminha: ele divide a luz igualmente por todas as saídas. Quem filtra é cada ONT, pela GEM port.",
+        "Luz a 1490 nm; débito nominal de 2,488 Gbit/s."
+      ],
+      "actorAtivo": [
+        "olt",
+        "ont"
+      ],
+      "sentidos": [
+        "down"
+      ],
+      "camara": {
+        "posicao": [
+          4,
+          20,
+          46
+        ],
+        "alvo": [
+          5.5,
+          0.5,
+          -0.5
+        ]
+      },
+      "passos": [
+        {
+          "id": "difusao",
+          "rotulo": "Difusão e filtro",
+          "actor": "olt"
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s03-upstream",
+      "titulo": "Upstream: o problema da colisão",
+      "legenda": "A subir, todos partilham a mesma fibra. Por isso cada ONT só fala quando a OLT lhe dá vez.",
+      "analogia": "Se todos os camiões entram na estrada ao mesmo tempo, chocam no cruzamento. Com um semáforo, cada um passa na sua vez.",
+      "nota": [
+        "Upstream — todas as ONT partilham a mesma fibra. Cada ONT só transmite quando a OLT lhe dá vez, em janelas de tempo (TDMA).",
+        "A colisão mostrada é didáctica: é o que aconteceria sem TDMA.",
+        "Luz a 1310 nm; débito nominal de 1,244 Gbit/s."
+      ],
+      "actorAtivo": [
+        "ont",
+        "olt"
+      ],
+      "sentidos": [
+        "up"
+      ],
+      "camara": {
+        "posicao": [
+          10,
+          11,
+          24
+        ],
+        "alvo": [
+          11,
+          0.5,
+          -0.5
+        ]
+      },
+      "passos": [
+        {
+          "id": "colisao",
+          "rotulo": "Sem regras",
+          "actor": "ont",
+          "texto": "Sem regras, ninguém se entende."
+        },
+        {
+          "id": "tdma",
+          "rotulo": "Com TDMA",
+          "actor": "olt",
+          "texto": "Cada ONT na sua janela."
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s04-omci",
+      "titulo": "OMCI: o comando à distância",
+      "legenda": "O técnico nunca vai a casa do cliente configurar a ONT. Configura na OLT, e a OLT envia tudo pelo OMCI.",
+      "analogia": "O centro de controlo fala por rádio com cada condutor: dá instruções, pede relatórios e ouve os pedidos de socorro.",
+      "nota": [
+        "OMCI — ONU Management and Control Interface, norma ITU-T G.988.",
+        "Canal de gestão entre a OLT e cada ONT, por dentro da própria fibra, numa GEM port reservada só para ele.",
+        "Serve para configurar (T-CONT, GEM ports, VLAN, portas Ethernet), monitorizar (potência óptica, contadores, erros), receber alarmes (dying gasp, perda de sinal, porta em baixo) e actualizar o software da ONT."
+      ],
+      "actorAtivo": [
+        "olt",
+        "omci",
+        "ont"
+      ],
+      "sentidos": [
+        "down",
+        "up"
+      ],
+      "camara": {
+        "posicao": [
+          -6,
+          14,
+          30
+        ],
+        "alvo": [
+          2,
+          1,
+          0
+        ]
+      },
+      "passos": [
+        {
+          "id": "configurar",
+          "rotulo": "1. Configurar",
+          "actor": "omci"
+        },
+        {
+          "id": "monitorizar",
+          "rotulo": "2. Monitorizar",
+          "actor": "ont"
+        },
+        {
+          "id": "alarmes",
+          "rotulo": "3. Alarmes",
+          "actor": "ont"
+        },
+        {
+          "id": "actualizar",
+          "rotulo": "4. Actualizar software",
+          "actor": "omci"
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s05-tcont",
+      "titulo": "T-CONT: a autorização para falar a subir",
+      "legenda": "O T-CONT decide quanto e quando a ONT pode enviar. O DBA ajusta isso em tempo real.",
+      "analogia": "O T-CONT é a autorização de passagem: diz a cada camião quando pode avançar e a que velocidade. O DBA ajusta o semáforo ao trânsito.",
+      "nota": [
+        "T-CONT — Transmission Container: unidade a que a OLT atribui banda a subir, identificada por um Alloc-ID.",
+        "Em cada trama descendente, a OLT envia o mapa de banda; o DBA ajusta as janelas em tempo real.",
+        "Na Huawei, tipo e banda definem-se num `dba-profile`, para o qual o T-CONT do perfil de linha aponta.",
+        "Tipos: 1 fixa (voz); 2 garantida (vídeo); 3 garantida + extra não garantido; 4 melhor esforço; 5 combinação."
+      ],
+      "actorAtivo": [
+        "dba",
+        "ont"
+      ],
+      "sentidos": [
+        "down",
+        "up"
+      ],
+      "camara": {
+        "posicao": [
+          2,
+          18,
+          34
+        ],
+        "alvo": [
+          4,
+          0.5,
+          0
+        ]
+      },
+      "passos": [
+        {
+          "id": "mapa",
+          "rotulo": "1. Mapa de banda",
+          "actor": "olt"
+        },
+        {
+          "id": "envio",
+          "rotulo": "2. Envio nas janelas",
+          "actor": "ont"
+        },
+        {
+          "id": "dba",
+          "rotulo": "3. DBA em acção",
+          "actor": "dba"
+        },
+        {
+          "id": "tipos",
+          "rotulo": "4. Tipos de T-CONT",
+          "actor": "dba"
+        }
+      ],
+      "tiposTcont": [
+        {
+          "tipo": 1,
+          "nome": "Fixa",
+          "exemplo": "voz",
+          "minimo": 1.0,
+          "maximo": 1.0
+        },
+        {
+          "tipo": 2,
+          "nome": "Garantida",
+          "exemplo": "vídeo",
+          "minimo": 0.75,
+          "maximo": 0.75
+        },
+        {
+          "tipo": 3,
+          "nome": "Garantida + extra",
+          "exemplo": "Internet com mínimo",
+          "minimo": 0.35,
+          "maximo": 0.9
+        },
+        {
+          "tipo": 4,
+          "nome": "Melhor esforço",
+          "exemplo": "Internet residencial básica",
+          "minimo": 0.0,
+          "maximo": 0.9
+        },
+        {
+          "tipo": 5,
+          "nome": "Combinação",
+          "exemplo": "vários",
+          "minimo": 0.45,
+          "maximo": 1.0
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s06-gem",
+      "titulo": "GEM port: um canal para cada tipo de tráfego",
+      "legenda": "A GEM port separa que tráfego é qual dentro da ONT. A VLAN 100 vai para a GEM 2.",
+      "analogia": "Dentro do camião, cada tipo de carga vai no seu compartimento etiquetado: Internet num, voz noutro, televisão noutro.",
+      "nota": [
+        "GEM port — GPON Encapsulation Method: canal lógico com identificador próprio, normalmente um por serviço.",
+        "A subir, cada GEM pertence a um T-CONT; a descer, a ONT reconhece as tramas pelas suas GEM ports.",
+        "O perfil de linha define que VLAN vai para que GEM."
+      ],
+      "actorAtivo": [
+        "router",
+        "ont"
+      ],
+      "sentidos": [
+        "up",
+        "down"
+      ],
+      "camara": {
+        "posicao": [
+          14,
+          4,
+          8
+        ],
+        "alvo": [
+          14,
+          1.6,
+          -3
+        ]
+      },
+      "passos": [
+        {
+          "id": "vlan",
+          "rotulo": "1. VLAN 100 → GEM 2",
+          "actor": "router"
+        },
+        {
+          "id": "tcont",
+          "rotulo": "2. GEM dentro do T-CONT",
+          "actor": "ont"
+        },
+        {
+          "id": "down",
+          "rotulo": "3. A descer",
+          "actor": "ont"
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s07-perfil",
+      "titulo": "O perfil de linha: o manual de carga",
+      "legenda": "O perfil de linha junta T-CONT, GEM ports e VLAN num só modelo. Define-se uma vez e aplica-se a muitas ONT.",
+      "analogia": "O perfil de linha é o manual de carga: escreve-se uma vez e serve para todos os camiões do mesmo tipo.",
+      "nota": [
+        "Perfil de linha — `ont-lineprofile`: modelo reutilizável definido uma vez na OLT e aplicado a muitas ONT, com os T-CONT, o perfil DBA de cada um, as GEM ports e o mapeamento VLAN → GEM.",
+        "Na Huawei, o número `gemport 2` do `service-port` é o índice da GEM no perfil de linha; o identificador físico da GEM port na fibra é atribuído pela OLT."
+      ],
+      "actorAtivo": [
+        "olt"
+      ],
+      "sentidos": [],
+      "camara": {
+        "posicao": [
+          14,
+          4,
+          8
+        ],
+        "alvo": [
+          14,
+          1.6,
+          -3
+        ]
+      },
+      "codigo": [
+        {
+          "linha": "dba-profile add profile-id 10 type3 assure 10240 max 102400",
+          "peca": "Faixa de estrada: 10 Mbit/s garantidos, até 100 Mbit/s"
+        },
+        {
+          "linha": "ont-lineprofile gpon profile-id 100",
+          "peca": "Perfil de linha 100"
+        },
+        {
+          "linha": " tcont 1 dba-profile-id 10",
+          "peca": "Contentor T-CONT 1 com essa faixa"
+        },
+        {
+          "linha": " gem add 2 eth tcont 1",
+          "peca": "Compartimento GEM 2 dentro do T-CONT 1"
+        },
+        {
+          "linha": " gem mapping 2 0 vlan 100",
+          "peca": "Etiqueta VLAN 100 ligada à GEM 2"
+        },
+        {
+          "linha": " commit",
+          "peca": "Carimbo «Gravado»"
+        }
+      ],
+      "passos": [
+        {
+          "id": "dba",
+          "rotulo": "dba-profile",
+          "actor": "dba"
+        },
+        {
+          "id": "perfil",
+          "rotulo": "ont-lineprofile",
+          "actor": "olt"
+        },
+        {
+          "id": "tcont",
+          "rotulo": "tcont",
+          "actor": "olt"
+        },
+        {
+          "id": "gem",
+          "rotulo": "gem add",
+          "actor": "olt"
+        },
+        {
+          "id": "mapping",
+          "rotulo": "gem mapping",
+          "actor": "olt"
+        },
+        {
+          "id": "commit",
+          "rotulo": "commit",
+          "actor": "olt"
+        },
+        {
+          "id": "copiar",
+          "rotulo": "Reutilizar",
+          "actor": "omci"
+        }
+      ],
+      "avisos": [
+        "Valores ilustrativos. O perfil real confirma-se com `display ont-lineprofile gpon profile-id 100`."
+      ]
+    },
+    {
+      "id": "s08-ponta-a-ponta",
+      "titulo": "Dos comandos à rede, de ponta a ponta",
+      "legenda": "Os dois comandos ligam tudo: o primeiro prepara a ONT, o segundo diz à OLT o que fazer com o tráfego que chega.",
+      "analogia": "Primeiro carrega-se o camião segundo o manual; depois, à saída da central, troca-se a etiqueta da carga e junta-se a etiqueta da transportadora.",
+      "nota": [
+        "`ont add … omci ont-lineprofile-id 100 …` — a ONT fica associada ao perfil de linha 100; a OLT envia-lhe a configuração pelo OMCI.",
+        "`service-port … gemport 2 … user-vlan 100 …` — diz à OLT o que fazer com o tráfego dessa GEM: a VLAN 100 é traduzida para a VLAN interna 2000 e recebe a VLAN externa 1410.",
+        "Na Huawei, `gemport 2` é o índice da GEM no perfil de linha; o identificador físico da GEM port na fibra é atribuído pela OLT."
+      ],
+      "actorAtivo": [
+        "omci",
+        "router",
+        "ont",
+        "olt"
+      ],
+      "sentidos": [
+        "up"
+      ],
+      "camara": {
+        "posicao": [
+          6,
+          22,
+          40
+        ],
+        "alvo": [
+          6,
+          0.5,
+          0
+        ]
+      },
+      "comandos": [
+        "ont add … omci ont-lineprofile-id 100 …",
+        "service-port … gemport 2 … user-vlan 100 …"
+      ],
+      "passos": [
+        {
+          "id": "ontadd",
+          "rotulo": "1. ont add",
+          "actor": "omci"
+        },
+        {
+          "id": "router",
+          "rotulo": "2. Portátil → router",
+          "actor": "router"
+        },
+        {
+          "id": "gem",
+          "rotulo": "3. GEM 2 espera a janela",
+          "actor": "ont"
+        },
+        {
+          "id": "fibra",
+          "rotulo": "4. Fibra a subir",
+          "actor": "splitter"
+        },
+        {
+          "id": "serviceport",
+          "rotulo": "5. service-port",
+          "actor": "olt"
+        },
+        {
+          "id": "saida",
+          "rotulo": "6. Para a rede de transporte",
+          "actor": "olt"
+        }
+      ],
+      "avisos": [
+        "Valores ilustrativos (perfil 100, DBA 10, VLAN 100 → 2000 + 1410)."
+      ]
+    },
+    {
+      "id": "s09-analogia",
+      "titulo": "A analogia completa",
+      "legenda": "A rede é uma estrada partilhada com semáforo. Cada conceito GPON tem o seu equivalente na estrada.",
+      "analogia": "OMCI é o rádio, T-CONT a autorização de passagem, GEM ports os compartimentos do camião e o perfil de linha o manual de carga.",
+      "nota": [
+        "OMCI = o rádio com que a central dá instruções ao condutor.",
+        "T-CONT = a autorização de passagem: quando pode avançar e a que velocidade.",
+        "GEM ports = os compartimentos etiquetados dentro do camião (Internet num, voz noutro).",
+        "Perfil de linha = o manual de carga, igual para todos os camiões do mesmo tipo."
+      ],
+      "actorAtivo": [
+        "omci",
+        "dba",
+        "ont",
+        "olt"
+      ],
+      "sentidos": [],
+      "camara": {
+        "posicao": [
+          6,
+          26,
+          44
+        ],
+        "alvo": [
+          6,
+          0,
+          0
+        ]
+      },
+      "passos": [
+        {
+          "id": "omci",
+          "rotulo": "OMCI = rádio",
+          "actor": "omci"
+        },
+        {
+          "id": "tcont",
+          "rotulo": "T-CONT = autorização",
+          "actor": "dba"
+        },
+        {
+          "id": "gem",
+          "rotulo": "GEM = compartimentos",
+          "actor": "ont"
+        },
+        {
+          "id": "perfil",
+          "rotulo": "Perfil = manual de carga",
+          "actor": "olt"
+        }
+      ],
+      "avisos": []
+    },
+    {
+      "id": "s10-resumo",
+      "titulo": "Resumo: quem faz o quê",
+      "legenda": "Quem faz o quê, a descer e a subir. No fim, um teste rápido de cinco perguntas.",
+      "analogia": "Rádio, autorização de passagem, compartimentos etiquetados e manual de carga: uma estrada partilhada sem acidentes.",
+      "nota": [
+        "OMCI: configurar, monitorizar, alarmes e actualizar, à distância.",
+        "T-CONT: quanto e quando cada ONT pode enviar a subir (Alloc-ID, DBA).",
+        "GEM port: um canal lógico por serviço; a VLAN é mapeada para a GEM.",
+        "Perfil de linha: T-CONT + DBA + GEM ports + VLAN num modelo reutilizável."
+      ],
+      "actorAtivo": [
+        "olt",
+        "splitter",
+        "ont",
+        "omci",
+        "router",
+        "dba"
+      ],
+      "sentidos": [],
+      "camara": {
+        "posicao": [
+          6,
+          30,
+          48
+        ],
+        "alvo": [
+          6,
+          0,
+          0
+        ]
+      },
+      "passos": [
+        {
+          "id": "tabela",
+          "rotulo": "Quem faz o quê",
+          "actor": "olt"
+        },
+        {
+          "id": "teste",
+          "rotulo": "Teste rápido",
+          "actor": "olt"
+        }
+      ],
+      "avisos": []
+    }
+  ],
+  "resumo": [
+    {
+      "actor": "OLT",
+      "downstream": "Envia para todos, cifra, envia o mapa de banda",
+      "upstream": "Recebe em fila, DBA ajusta janelas, traduz VLAN (`service-port`)"
+    },
+    {
+      "actor": "Splitter",
+      "downstream": "Divide a luz para todas as casas",
+      "upstream": "Junta a luz de todas as ONT (passivo, sem energia)"
+    },
+    {
+      "actor": "ONT",
+      "downstream": "Filtra pela GEM port, descarta o resto",
+      "upstream": "Põe cada serviço na sua GEM, envia nas janelas do T-CONT"
+    },
+    {
+      "actor": "OMCI",
+      "downstream": "Configura, monitoriza, actualiza a ONT",
+      "upstream": "Traz alarmes e contadores para a OLT"
+    },
+    {
+      "actor": "Router",
+      "downstream": "Entrega ao dispositivo",
+      "upstream": "Marca o tráfego com a VLAN 100"
+    }
+  ],
+  "quiz": [
+    {
+      "pergunta": "Porque é que as ONT não podem transmitir todas ao mesmo tempo a subir?",
+      "opcoes": [
+        "Porque partilham a mesma fibra e os sinais colidiriam",
+        "Porque o splitter só deixa passar uma de cada vez",
+        "Porque a OLT está desligada a subir"
+      ],
+      "certa": 0,
+      "explicacao": "Todas as ONT partilham a mesma fibra a subir. Sem janelas de tempo (TDMA), os sinais encontrar-se-iam e ninguém se entenderia. O splitter é passivo: não escolhe nada."
+    },
+    {
+      "pergunta": "Onde é que o técnico configura a ONT?",
+      "opcoes": [
+        "Em casa do cliente, ligado à ONT",
+        "No splitter",
+        "Na OLT, que envia tudo à ONT pelo OMCI"
+      ],
+      "certa": 2,
+      "explicacao": "O técnico configura na OLT. A OLT envia a configuração à ONT pelo OMCI, por dentro da própria fibra."
+    },
+    {
+      "pergunta": "O que decide quanto e quando a ONT pode enviar?",
+      "opcoes": [
+        "A VLAN",
+        "O T-CONT, com as janelas ajustadas pelo DBA",
+        "O router do cliente"
+      ],
+      "certa": 1,
+      "explicacao": "O T-CONT (identificado pelo Alloc-ID) recebe janelas no mapa de banda; o DBA ajusta-as em tempo real."
+    },
+    {
+      "pergunta": "Para que GEM port vai a VLAN 100 no nosso exemplo?",
+      "opcoes": [
+        "GEM 2",
+        "GEM 10",
+        "GEM 100"
+      ],
+      "certa": 0,
+      "explicacao": "No perfil de linha 100, `gem mapping 2 0 vlan 100` liga a VLAN 100 à GEM 2 (valores ilustrativos)."
+    },
+    {
+      "pergunta": "O que contém um perfil de linha?",
+      "opcoes": [
+        "Só a palavra-passe da ONT",
+        "Os T-CONT, o perfil DBA de cada um, as GEM ports e o mapeamento VLAN → GEM",
+        "A lista de clientes da OLT"
+      ],
+      "certa": 1,
+      "explicacao": "O perfil de linha é um modelo reutilizável com T-CONT, perfil DBA, GEM ports e mapeamento VLAN → GEM, aplicado a muitas ONT."
+    }
+  ]
+}
