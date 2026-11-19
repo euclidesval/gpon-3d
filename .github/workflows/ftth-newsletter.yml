@@ -1,0 +1,39 @@
+name: Newsletter FTTH semanal
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"   # segunda-feira 05:17 UTC = 06:17 em Luanda
+  workflow_dispatch: {}      # permite enviar manualmente (botão "Run workflow")
+
+permissions:
+  contents: write
+
+jobs:
+  newsletter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ftth-newsletter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Gerar e enviar newsletter
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: python newsletter.py
+      - name: Guardar arquivo e estado
+        run: |
+          git config user.name "ftth-newsletter-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add archive state
+          git commit -m "Newsletter FTTH $(date -u +%F)" || echo "sem alterações"
+          git push

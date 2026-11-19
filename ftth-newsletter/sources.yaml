@@ -1,0 +1,167 @@
+# Fontes da Newsletter FTTH semanal
+# type:
+#   rss    -> feed RSS/Atom oficial do site (método mais simples e estável)
+#   gnews  -> Google News RSS (para sites sem feed ou que bloqueiam robôs)
+#   scrape -> página de notícias lida directamente (links novos face à semana anterior)
+# filter: true  -> só entram artigos com termos FTTH/PON/fibra (fontes generalistas)
+#         false -> entra tudo (fontes já focadas em fibra ou o regulador angolano)
+
+sections:
+  - id: associacoes
+    title: "1. Associações da indústria FTTH"
+    sources:
+      - name: Fibre Council Europe (ex-FTTH Council Europe)
+        type: scrape
+        url: https://fibrecouncil.eu/news/news-library
+        link_pattern: 'href="(https://fibrecouncil\.eu/news/news-library/\d+/[^"]+)"'
+        filter: false
+      - name: FTTH Council Europe (imprensa)
+        type: gnews
+        query: '"FTTH Council Europe" OR "Fibre Council Europe" OR "FTTH Market Panorama"'
+        filter: false
+      - name: Fiber Broadband Association
+        type: gnews
+        query: 'site:fiberbroadband.org OR "Fiber Broadband Association"'
+        filter: true
+      - name: Digital Council Africa (ex-FTTH Council Africa)
+        type: gnews
+        query: '"Digital Council Africa" OR "FTTH Council Africa"'
+        filter: false
+
+  - id: normas
+    title: "2. Normas técnicas e evolução PON"
+    sources:
+      - name: Broadband Forum
+        type: scrape
+        url: https://www.broadband-forum.org/news
+        base: https://www.broadband-forum.org
+        link_pattern: 'href="(/news/20\d\d-[^"]+)"'
+        filter: false
+      - name: ITU-T
+        type: gnews
+        query: 'site:itu.int (PON OR fibre OR fiber OR "G.984" OR "G.9807" OR "G.9804" OR "Study Group 15")'
+        filter: true
+      - name: IEEE 802.3 / EPON
+        type: gnews
+        query: '"IEEE 802.3" (PON OR EPON OR "50G-EPON")'
+        filter: false
+      - name: Tecnologia PON (25G/50G/XGS)
+        type: gnews
+        query: '"50G-PON" OR "25GS-PON" OR "25G PON" OR "XGS-PON" OR "Higher Speed PON" OR "G.9804"'
+        filter: false
+
+  - id: noticias
+    title: "3. Notícias e análise técnica do sector"
+    sources:
+      - name: Lightwave (FTTx)
+        type: rss
+        url: 'https://www.lightwaveonline.com/__rss/website-scheduled-content.xml?input=%7B%22sectionAlias%22%3A%22fttx%22%7D'
+        filter: false
+      - name: Lightwave
+        type: rss
+        url: 'https://www.lightwaveonline.com/__rss/website-scheduled-content.xml?input=%7B%22sectionAlias%22%3A%22home%22%7D'
+        filter: true
+      - name: Fibre Systems
+        type: rss
+        url: https://www.fibre-systems.com/rss.xml
+        filter: true
+      - name: Light Reading
+        type: rss
+        url: https://www.lightreading.com/rss.xml
+        filter: true
+      - name: Fierce Network
+        type: rss
+        url: https://www.fierce-network.com/rss/xml
+        filter: true
+      - name: Converge Digest
+        type: rss
+        url: https://convergedigest.com/feed/
+        filter: true
+      - name: Telecompaper
+        type: gnews
+        query: 'site:telecompaper.com (FTTH OR fibre OR fiber OR PON)'
+        filter: true
+      - name: TeleGeography
+        type: rss
+        url: https://resources.telegeography.com/rss.xml
+        filter: true
+
+  - id: africa
+    title: "4. África e Angola"
+    sources:
+      - name: INACOM (regulador angolano)
+        type: rss
+        url: https://www.inacom.gov.ao/feed
+        filter: false
+      - name: Angola – fibra e banda larga
+        type: gnews
+        query: 'Angola (fibra OR FTTH OR "banda larga" OR internet OR telecomunicações OR conectividade) (Unitel OR "Angola Telecom" OR Africell OR "Movicel" OR INACOM OR operadora)'
+        hl: pt-PT
+        gl: PT
+        ceid: 'PT:pt-150'
+        filter: true
+        min_score: 3
+      - name: ITWeb Africa
+        type: rss
+        url: https://itweb.africa/rss
+        filter: true
+      - name: TechCentral
+        type: rss
+        url: https://techcentral.co.za/feed/
+        filter: true
+      - name: Developing Telecoms
+        type: rss
+        url: 'https://www.developingtelecoms.com/?format=feed&type=rss'
+        filter: true
+      - name: Telecom Review Africa
+        type: rss
+        url: https://www.telecomreviewafrica.com/feed/
+        filter: true
+
+  - id: analistas
+    title: "5. Estudos de mercado e analistas"
+    sources:
+      - name: Dell'Oro Group
+        type: gnews
+        query: "site:delloro.com OR \"Dell'Oro\" (PON OR OLT OR broadband OR \"optical access\")"
+        filter: true
+      - name: Omdia
+        type: gnews
+        query: 'Omdia (fiber OR fibre OR FTTH OR PON OR broadband)'
+        filter: true
+      - name: IDATE
+        type: gnews
+        query: 'IDATE (FTTH OR fibre OR fiber)'
+        filter: false
+      - name: Ookla
+        type: rss
+        url: https://www.ookla.com/articles/rss
+        filter: true
+
+  - id: fabricantes
+    title: "6. Fabricantes e novas tecnologias"
+    sources:
+      - name: Huawei
+        type: gnews
+        query: 'Huawei (PON OR OLT OR FTTH OR FTTR OR "optical access" OR MA5800)'
+        filter: true
+      - name: Nokia
+        type: gnews
+        query: 'Nokia (PON OR "fiber broadband" OR "fixed networks" OR "Lightspan" OR "Quillion")'
+        filter: true
+      - name: ZTE
+        type: gnews
+        query: 'ZTE (PON OR OLT OR FTTH OR FTTR OR "optical access")'
+        filter: true
+      - name: Corning
+        type: gnews
+        query: 'Corning (fiber OR fibre OR "optical connectivity" OR FTTH)'
+        filter: true
+
+  - id: formacao
+    title: "7. Formação e boas práticas"
+    sources:
+      - name: Fiber Optic Association / formação
+        type: gnews
+        query: '"Fiber Optic Association" OR CFOT OR "fiber technician" OR "fibre technician" OR "fiber workforce" OR "fibre skills" OR "HCIA-Access" OR "OpTIC Path"'
+        filter: true
