@@ -200,11 +200,12 @@ def ai_highlights(cfg: dict, by_section: dict[str, list[Item]]) -> str | None:
     prompt = (
         "És analista de redes de acesso FTTH/GPON a trabalhar num operador em Angola. "
         "Abaixo estão as notícias da semana recolhidas automaticamente. Escreve em português "
-        "(norma europeia/angolana) uma secção 'Destaques da semana' com 5 a 8 pontos curtos: "
+        "(norma europeia/angolana) 5 a 8 pontos curtos de destaques da semana: "
         "o que aconteceu e porque importa para um engenheiro FTTH (tecnologia PON, normas, "
         "mercado, África/Angola). Termina com uma linha 'Para acompanhar:' com 1-2 tendências. "
         "Usa apenas a informação fornecida, não inventes números. Responde só com HTML simples "
-        "(<ul><li>, <p>, <b>), sem <html> nem <body>.\n\n" + "\n".join(lines[:120])
+        "(<ul><li>, <p>, <b>), sem <html> nem <body> e sem título nem cabeçalho no início "
+        "(o título já existe no email).\n\n" + "\n".join(lines[:120])
     )
     client = anthropic.Anthropic()
     try:
@@ -222,7 +223,11 @@ def ai_highlights(cfg: dict, by_section: dict[str, list[Item]]) -> str | None:
     if resp.stop_reason == "refusal":
         return None
     text = "".join(b.text for b in resp.content if b.type == "text").strip()
-    return re.sub(r"^```(?:html)?|```$", "", text).strip() or None
+    text = re.sub(r"^```(?:html)?|```$", "", text).strip()
+    # Remove um título "Destaques da semana" que o modelo possa ter acrescentado
+    text = re.sub(r"^\s*<(h\d|p|b|strong)[^>]*>\s*(<b>|<strong>)?\s*Destaques da semana\s*:?\s*(</b>|</strong>)?\s*</\1>\s*",
+                  "", text, flags=re.I)
+    return text or None
 
 
 def render(cfg: dict, by_section: dict[str, list[Item]], highlights: str | None, errors: list[str]) -> tuple[str, str]:

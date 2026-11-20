@@ -87,7 +87,7 @@ sections:
         filter: true
 
   - id: africa
-    title: "4. África e Angola"
+    title: "4. África, Angola e fibra pré-paga"
     sources:
       - name: INACOM (regulador angolano)
         type: rss
@@ -101,6 +101,17 @@ sections:
         ceid: 'PT:pt-150'
         filter: true
         min_score: 3
+      - name: Fibra pré-paga e baixo custo
+        type: gnews
+        query: '"prepaid fiber" OR "prepaid fibre" OR "pay-as-you-go fiber" OR "pay-as-you-go fibre" OR "Fiber on the Go" OR Fibertime OR "low-cost fiber" OR "affordable fibre"'
+        filter: false
+      - name: Fibra pré-paga (lusófono)
+        type: gnews
+        query: '"fibra pré-paga" OR "fibra pré-pago" OR "fibra pré-paga" OR "Fiber on the Go" OR Fibertime'
+        hl: pt-PT
+        gl: PT
+        ceid: 'PT:pt-150'
+        filter: false
       - name: ITWeb Africa
         type: rss
         url: https://itweb.africa/rss
