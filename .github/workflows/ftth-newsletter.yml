@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ftth-newsletter
+  cancel-in-progress: false
+
 jobs:
   newsletter:
     runs-on: ubuntu-latest
@@ -35,5 +39,10 @@ jobs:
           git config user.name "ftth-newsletter-bot"
           git config user.email "actions@users.noreply.github.com"
           git add archive state
-          git commit -m "Newsletter FTTH $(date -u +%F)" || echo "sem alterações"
-          git push
+          git commit -m "Newsletter FTTH $(date -u +%F)" || { echo "sem alterações"; exit 0; }
+          # Se o main mudou durante a execução (ex.: merge de um PR), integra e tenta de novo
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
