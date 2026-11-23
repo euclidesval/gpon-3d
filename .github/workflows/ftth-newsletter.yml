@@ -2,7 +2,11 @@ name: Newsletter FTTH semanal
 
 on:
   schedule:
-    - cron: "17 5 * * 1"   # segunda-feira 05:17 UTC = 06:17 em Luanda
+    # O GitHub pode atrasar ou descartar execuções agendadas em horas de muita carga.
+    # Há por isso três tentativas à segunda-feira; só a primeira que correr envia o email.
+    - cron: "17 5 * * 1"   # 06:17 em Luanda
+    - cron: "43 7 * * 1"   # 08:43 em Luanda (reserva)
+    - cron: "37 10 * * 1"  # 11:37 em Luanda (reserva)
   workflow_dispatch: {}      # permite enviar manualmente (botão "Run workflow")
 
 permissions:
@@ -20,11 +24,21 @@ jobs:
         working-directory: ftth-newsletter
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Verificar se a edição de hoje já foi enviada
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ -f "archive/$(date -u +%F).html" ]; then
+            echo "Edição de hoje já enviada; nada a fazer."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.check.outputs.skip != 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - if: steps.check.outputs.skip != 'true'
+        run: pip install -r requirements.txt
       - name: Gerar e enviar newsletter
+        if: steps.check.outputs.skip != 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
@@ -35,6 +49,7 @@ jobs:
           MAIL_TO: ${{ secrets.MAIL_TO }}
         run: python newsletter.py
       - name: Guardar arquivo e estado
+        if: steps.check.outputs.skip != 'true'
         run: |
           git config user.name "ftth-newsletter-bot"
           git config user.email "actions@users.noreply.github.com"
